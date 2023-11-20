@@ -1,5 +1,5 @@
 <template>
-  <h1>Metadata</h1>
+    <h1>Metadata</h1>
     <div class="sub">
         <p><GridIcon/>Detil Dataset</p>
     </div>
@@ -49,11 +49,9 @@
 
 <script>
 import GridIcon from '@/components/gridIcons.vue'
-import Navbar from '@/components/navbar.vue'
 export default {
     components: {
-        GridIcon,
-        Navbar,
+        GridIcon
     }
 }
 </script>
