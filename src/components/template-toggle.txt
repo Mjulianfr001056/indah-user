@@ -1,0 +1,16 @@
+<button @click="toggleShowMetadata">
+        <span>Lihat Metadata</span>
+    </button>
+    <div v-if="showMetadata">
+        <Metadata />
+    </div>
+
+
+
+export default {
+    methods:{
+        toggleShowMetadata(){
+            this.showMetadata = !this.showMetadata
+        }
+    }
+}

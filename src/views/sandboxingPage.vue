@@ -35,7 +35,7 @@ ul {
 li{
   float: left;
 }
-li a{
+li button{
   font-weight: 900;
   font-size: 16px;
   display: block;
