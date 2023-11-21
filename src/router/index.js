@@ -1,11 +1,9 @@
 import {createRouter, createWebHistory} from 'vue-router';
-import dashboard from '../pages/master/dashboard.vue'
-import sandboxing from '../pages/sandboxingList.vue'
-import metadata from '../pages/metadata.vue'
+import dashboard from '../views/dashboard.vue'
+import sandboxing from '../views/sandboxingList.vue'
+import metadata from '../views/metadata.vue'
 import sandboxingPage from '@/views/sandboxingPage.vue'
-import notebookPage from '../pages/notebookPage.vue'
-import dataPage from "@/views/dataPage.vue"
-import metadataDetails from "@/views/metadataDetails.vue";
+import sandboxingPageBackup from '@/views/sandboxingPage-backup.vue'
 
 const routes = [
     {
@@ -29,19 +27,9 @@ const routes = [
         component: sandboxingPage
     },
     {
-        name: 'Notebook',
-        path: '/notebook',
-        component: notebookPage
-    },
-    {
-        path: "/data-page",
-        name: "dataPage",
-        component: dataPage
-    },
-    {
-        path: "/metadata-details",
-        name: "metadataDetails",
-        component: metadataDetails
+        name: 'SandboxingPagee',
+        path: '/sandboxing-page-backup',
+        component: sandboxingPageBackup
     },
 ];
 const router = Router();

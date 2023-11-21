@@ -8,8 +8,8 @@
 </template>
 
 <script>
-import notebook from "../pages/notebookPage.vue"
-import dataNotebook from "../views/dataPage.vue"
+import notebook from "../components/notebookPage.vue"
+import dataNotebook from "../components/dataPage.vue"
 export default {
 name: 'App',
 components: {

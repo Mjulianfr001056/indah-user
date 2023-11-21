@@ -3,21 +3,30 @@
         Daftar Data Terpilih
     </h1>
     <ol>
-        <li>Data Sensus Penduduk Long Form 2020 Blok I</li> <Metadata /> <router-view />
-        <li>Data Sensus Penduduk Long Form 2020 Blok II</li> <Metadata /> <router-view />
-        <li>Data Sensus Penduduk Long Form 2020 Blok III</li> <Metadata /> <router-view />
-        <li>Data Sensus Penduduk Long Form 2020 Blok IV</li> <Metadata /> <router-view />
+        <li>Data Sensus Penduduk Long Form 2020 Blok I</li>
+        <button v-on:click="isOpen = !isOpen"> Toggle </button>
+        <!-- <button @click="views = 'metadataActive'">Lihat Metadata</button> -->
+        <!-- <div v-show="metadataActive"> <Metadata/> </div> -->
+        <div v-show="isOpen"> <Metadata /> </div>
+        <li>Data Sensus Penduduk Long Form 2020 Blok II</li> <Metadata />
+        <li>Data Sensus Penduduk Long Form 2020 Blok III</li> <Metadata />
+        <li>Data Sensus Penduduk Long Form 2020 Blok IV</li> <Metadata />
 
     </ol>
 </template>
 
 <script>
-    import Metadata from "@/views/metadataDetails.vue"
+    import Metadata from "@/components/metadataDetails.vue"
     export default {
         name: 'MetadataDetails',
         components: {
         Metadata
+    },
+    data(){
+    return{
+        views: '!metadataActive'
     }
+}
 }
 </script>
 

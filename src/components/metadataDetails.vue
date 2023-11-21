@@ -1,5 +1,5 @@
 <template>
-    <router-link to="/metadata-details" class="meta">Lihat Metadata</router-link>
+    <p>List Metadata</p>
 </template>
 
 <script>

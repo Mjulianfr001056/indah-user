@@ -96,7 +96,7 @@
 </template>
 
 <script>
-import popUpPilihData from '@/views/PopUpPilihData.vue'
+import popUpPilihData from '@/components/PopUpPilihData.vue'
 export default {
   components: {popUpPilihData},
 data() {
