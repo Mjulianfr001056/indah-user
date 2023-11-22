@@ -85,25 +85,32 @@ export default {
 
 <style scoped>
  h2 {
-  padding: 30px 0 0 40px;
+  padding: 30px 0 0 30px;
   font-style: inter;
   font-size: 27px;
  }
 
  p {
-  padding: 0 0 60px 40px;
+  padding: 0 0 0 30px;
   color: #756464;
   font-style: inter;
   font-size: 14px;
+  margin-right: 30px;
  }
 
  .button-to-notebook {
+  display: flex;
+  justify-content:inherit;
+  align-items: center;
   color: white;
   background-color: #2B1D1D;
   font-weight: bold;
   font-size: 16px;
   padding: 10px;
-  margin: 5px;
+  margin-bottom: 5px;
+  float: right;
+  margin-right: 30px;
+  text-decoration: none;
  }
 
  td {
@@ -112,6 +119,15 @@ export default {
 
  .kolom {
   background-color: #076F3D;
+ }
+ table{
+  margin-right: 30px;
+  /* width: 100%; */
+  border-collapse: collapse;
+  margin-left: 30px;
+  margin-top: 90px;
+
+
  }
 
  th {
@@ -124,16 +140,16 @@ export default {
   text-align: left;
  }
  
- nav{
-    display: flex;
-    text-align: right;
 
-  }
  .pagination {
+  display: flex;
   justify-content:inherit;
   align-items: center;
   background-color: #fff;
-  padding: 1rem;
+  /* padding: 1rem; */
+  float: right;
+  margin-right: 30px;
+  margin-top: 60px;
 }
 
 .pagination li {
