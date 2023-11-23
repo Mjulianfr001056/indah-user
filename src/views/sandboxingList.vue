@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="description">
     <h2>List Sandboxing</h2>
     <p>Daftar akun dan dataset yang diajukan. Sandboxing memungkinkan pengguna untuk melakukan eksplorasi data menggunakan script.</p>
   </div>
@@ -53,6 +53,7 @@
       <td>Data Sensus Penduduk Long Form 2020 (Data Keluarga) <BookIcon/></td>
     </tr>
   </tbody>
+  <font-awesome-icon icon="book-open" />
 </table>
 
 <nav aria-label="Page navigation example">
@@ -72,6 +73,9 @@
     </li>
   </ul>
 </nav>
+<div class="pagination-new">
+  <v-pagination :length="5"></v-pagination>
+</div>
 </template>
 
 <script>
@@ -79,19 +83,27 @@ import BookIcon from '@/components/bookIcons.vue';
 export default {
   components: {
     BookIcon,
+  },
+  data() {
+    return {
+      page: 1,
+    }
   }
+
 }
 </script>
 
 <style scoped>
+  .description{
+    margin-left: 3%;
+  }
  h2 {
-  padding: 30px 0 0 30px;
+  padding-top: 30px;
   font-style: inter;
   font-size: 27px;
  }
 
  p {
-  padding: 0 0 0 30px;
   color: #756464;
   font-style: inter;
   font-size: 14px;
@@ -107,12 +119,21 @@ export default {
   font-weight: bold;
   font-size: 16px;
   padding: 10px;
-  margin-bottom: 5px;
   float: right;
-  margin-right: 30px;
+  margin-top: 30px;
+  margin-bottom: 20px;
+  margin-right: 2%;
   text-decoration: none;
  }
 
+ table{
+  /* margin-right: 30px; */
+  width: 95%;
+  border-collapse: collapse;
+  margin-left: 3%;
+  margin-top: 50px;
+  margin-bottom: 50px;
+ }
  td {
   padding-left: 15px;
  }
@@ -120,23 +141,13 @@ export default {
  .kolom {
   background-color: #076F3D;
  }
- table{
-  margin-right: 30px;
-  /* width: 100%; */
-  border-collapse: collapse;
-  margin-left: 30px;
-  margin-top: 90px;
 
-
- }
 
  th {
   color: white;
   font-style: inter;
   font-size: 16px;
   padding: 10px;
-  width: 500px;
-  height: 41px;
   text-align: left;
  }
  
@@ -148,7 +159,7 @@ export default {
   background-color: #fff;
   /* padding: 1rem; */
   float: right;
-  margin-right: 30px;
+  margin-right: 2%;
   margin-top: 60px;
 }
 
@@ -168,4 +179,11 @@ export default {
  .page-link {
   color: #428DD1;
  }
+.pagination-new{
+  /* float: right; */
+  position: absolute;
+  right: 2%;
+}
 </style>
+
+

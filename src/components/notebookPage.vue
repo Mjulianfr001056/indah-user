@@ -19,75 +19,12 @@
     <button @click="views = 'PopUp'">Tambahkan Data</button>
   </div>
   <div v-if="views === 'PopUp'"><popUpPilihData /></div>
-  
-  
 
-    <p>Tampilkan: </p>
-    <div class="tampil">
-      <select class="custom-select" id="inlineFormCustomSelect">
-        <option selected></option>
-        <option value="10">10</option>
-        <option value="20">20</option>
-        <option value="30">30</option>
-      </select>
-    </div>
-    <p>baris</p>
-  
     <div class="dropdown">
-      <button class="dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-        Column
-      </button>
-      <ul class="dropdown-menu" style="border-radius: 0;">
-        <li><span class="dropdown-item-text">Kolom Data</span></li>
-        <li><a class="dropdown-item" href="#">Column 1</a></li>
-        <li><a class="dropdown-item" href="#">Column 2</a></li>
-        <li><a class="dropdown-item" href="#">Column 3</a></li>
-      </ul>
-
-      <button class="dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-        Sort
-      </button>
-      <ul class="dropdown-menu" style="border-radius: 0;">
-        <li><span class="dropdown-item-text">Dropdown item text</span></li>
-        <li><a class="dropdown-item" href="#">Ascending</a></li>
-        <li><a class="dropdown-item" href="#">Descending</a></li>
-      </ul>
 
       <button>Stripped Table</button>
       <button>Highlight Row</button>
     </div>
-
-    <!-- <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
-    <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-            <tr>
-                <th scope="col" class="kolom">
-                    <div class="flex items-center">
-                        Color
-                        <a href="#"><svg class="w-3 h-3 ms-1.5" fill="white">
-    <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z"/>
-  </svg></a>
-                    </div>
-                </th>
-                <th scope="col" class="kolom">
-                    <div class="flex items-center">
-                        <a href="#"><svg class="w-3 h-3 ms-1.5" fill="white">
-    <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z"/>
-  </svg></a>
-                        Color
-                    </div>
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <th>
-                    <td>aa</td>
-                </th>
-            </tr>
-        </tbody>
-    </table> -->
-<!-- </div> -->
 
 <div class="table">
   <v-card
@@ -287,8 +224,9 @@ data() {
     display: inline-block;
  }
 
- table {
+ .table {
     margin: 20px;
+    margin-left: 25px;
     align-content: center;
  }
  td {

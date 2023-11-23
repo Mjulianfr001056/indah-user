@@ -1,6 +1,6 @@
 <template>
     <div class="navbar">
-      <img />
+      <a><img class="logo-indah" :src="image" alt="INDAH"/></a>
       <a>Beranda</a>
       <a>Katalog Data</a>
       <a>Visualisasi</a>
@@ -19,8 +19,14 @@
   </template>
   
   <script>
+  import image from "@/components/logo-indah.png"
   export default {
     name: 'Navbar',
+    data: function(){
+      return{
+        image: image
+      }
+    }
   };
   </script>
   
@@ -29,20 +35,26 @@
     overflow: hidden;
     text-align: center;
     background-color: #ffffff;
+    /* float: left; */
+    margin-left: 1%;
+    max-width: max-content;
   }
   
+  .logo-indah{
+    max-width: 107px;
+  }
   .navbar a {
     font-size: 16px;
     font-weight: 600;
     color: #076f3d;
     text-align: center;
     padding: 14px 16px;
-    display: inline-block;
     text-decoration: none;
+    float: left;
   }
   
   .dropdown {
-    float: left;
+    float: right;
     overflow: hidden;
   }
   
