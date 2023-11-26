@@ -1,6 +1,6 @@
 <template>
     <div class="navbar">
-      <a><img class="logo-indah" :src="image" alt="INDAH"/></a>
+      <a href="/"><img class="logo-indah" :src="image" alt="INDAH"/></a>
       <a>Beranda</a>
       <a>Katalog Data</a>
       <a>Visualisasi</a>

@@ -18,13 +18,13 @@
         <Metadata />
     </div>
         <li>Data Sensus Penduduk Long Form 2020 Blok III</li>
-        <v-expansion-panels>
+        <!-- <v-expansion-panels>
             <v-expansion-panel title="Lihat Metadata"
             slotA="<Metadata />"
             >
                 <Metadata />
             </v-expansion-panel>
-        </v-expansion-panels>
+        </v-expansion-panels> -->
         <li>Data Sensus Penduduk Long Form 2020 Blok IV</li>
 
     </ol>
