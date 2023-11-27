@@ -1,0 +1,24 @@
+<template>
+  <ul>
+      <li><button @click="layout = 'notebookActive'">Notebook</button></li>
+      <li><button @click="layout = 'dataActive'">Data</button></li>
+  </ul>
+  <div v-if="layout === 'notebookActive'"> <notebook/> </div>
+  <div v-if="layout === 'dataActive'"><dataNotebook/></div>
+</template>
+
+<script>
+import notebook from "../components/notebookPage.vue"
+import dataNotebook from "../components/dataPage.vue"
+export default {
+name: 'App',
+components: {
+  notebook, dataNotebook
+},
+data(){
+  return{
+      layout: 'notebookActive'
+  }
+}
+}
+</script>
