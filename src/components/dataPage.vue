@@ -2,14 +2,15 @@
     <h1>
         Daftar Data Terpilih
     </h1>
-    <ol>
+    <!-- <ol>
         <li>Data Sensus Penduduk Long Form 2020 Blok I</li>
         <button @click="toggleShowMetadata">
         <span>Lihat Metadata</span>
         </button>
-        <div v-if="showMetadata">
+        <div v-if="showMetadata" class="showMetadata">
             <Metadata />
         </div>
+        <br>
         <li>Data Sensus Penduduk Long Form 2020 Blok II</li>
         <button @click="toggleShowMetadata">
         <span>Lihat Metadata</span>
@@ -18,34 +19,44 @@
         <Metadata />
     </div>
         <li>Data Sensus Penduduk Long Form 2020 Blok III</li>
-        <!-- <v-expansion-panels>
-            <v-expansion-panel title="Lihat Metadata"
-            slotA="<Metadata />"
-            >
-                <Metadata />
-            </v-expansion-panel>
-        </v-expansion-panels> -->
+        
         <li>Data Sensus Penduduk Long Form 2020 Blok IV</li>
 
-    </ol>
+    </ol> -->
 
-    
+    <div>
+    <v-expansion-panels variant="accordion">
+        <v-expansion-panel
+        v-for="(item, index) in items"
+        :key="index"
+        :title="`Data terpilih ${selectedData[index]}`"
+        :text="item.description"
+        ></v-expansion-panel>
+    </v-expansion-panels>
+  </div>
 </template>
 
 <script>
-    import Metadata from "@/views/metadata.vue"
+    // import Metadata from "@/views/metadata.vue"
     export default {
-        components: {Metadata},
+        // components: {Metadata},
     data(){
     return{
-        showMetadata: false
+        // showMetadata: false,
+        items: [
+        { description: "Metadata 1" },
+        { description: "Metadata 2" },
+        { description: "Metadata 3" },
+        { description: "Metadata 4" },
+      ],
+      selectedData: [1, 2, 3, 4], // Data terpilih sesuai dengan jumlah panel
     }
     },
-    methods:{
-        toggleShowMetadata(){
-            this.showMetadata = !this.showMetadata
-        }
-    }
+    // methods:{
+    //     toggleShowMetadata(){
+    //         this.showMetadata = !this.showMetadata
+    //     }
+    // }
 }
 </script>
 
@@ -53,6 +64,7 @@
     h1 {
         text-align: left;
         margin-left: 20px;
+        margin-bottom: 30px;
     }
     ol {
         display: flex;
@@ -69,5 +81,8 @@
     li, a {
         margin-bottom: 10px;
     }
-    
+    .showMetadata{
+        width: fit-content;
+        height: max-content;
+    }
 </style>

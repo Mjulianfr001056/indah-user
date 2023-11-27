@@ -5,13 +5,105 @@
   </div> -->
   <div class="deskriptif">
       <v-row justify="start">
-    <v-dialog v-model="dialog" persistent width="1024">
-      <template v-slot:activator="{ on }">
-        <v-btn color="primary" v-on="on">Statistik Deskriptif</v-btn>
+    <v-dialog v-model="dialog1" persistent width="1024">
+      <template v-slot:activator="{ props }">
+        <v-btn color="primary" v-bind="props" @click="openDialog(1)">Statistik Deskriptif</v-btn>
       </template>
       <v-card>
         <v-card-title>
           <span class="text-h4">Statistik Deskriptif</span>
+          <br>
+          <span class="text-h5">Pilih Data</span>
+        </v-card-title>
+        <v-card-text>
+          <v-container>
+            <v-row>
+              <v-col cols="12" sm="6">
+                <v-select
+                  :items="['Kolom 1', 'Kolom 2', 'Kolom 3', 'Kolom 4']"
+                  label="Kolom"
+                  required
+                ></v-select>
+              </v-col>
+              <v-col cols="12" sm="6">
+                <v-autocomplete
+                  :items="['Rata-rata', 'Median', 'Modus', 'Simpangan Baku', 'Varians', 'Jangkauan', 'Jangkauan Antar Kuartil', 'Simpangan', 'Simpangan Rata-rata']"
+                  label="Chart"
+                  multiple
+                ></v-autocomplete>
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="blue-darken-1" variant="text" @click="dialog1 = false">
+            Tutup
+          </v-btn>
+          <v-btn color="blue-darken-1" variant="text" @click="dialog1 = false">
+            Simpan
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+  </v-row>
+    </div>
+
+  <div class="inferensia">
+      <v-row justify="center">
+    <v-dialog v-model="dialog2" persistent width="1024">
+      <template v-slot:activator="{ props }">
+        <v-btn color="primary" v-bind="props" @click="openDialog(2)"> Statistik Inferensia </v-btn>
+      </template>
+      <v-card>
+        <v-card-title>
+          <span class="text-h5">Statistik Inferensia</span>
+          <br>
+          <span class="text-h6">Pilih Data</span>
+        </v-card-title>
+        <v-card-text>
+          <v-container>
+            <v-row>
+              <v-col cols="12" sm="6">
+                <v-select
+                  :items="['Kolom 1', 'Kolom 2', 'Kolom 3', 'Kolom 4']"
+                  label="Kolom"
+                  required
+                ></v-select>
+              </v-col>
+              <v-col cols="12" sm="6">
+                <v-autocomplete
+                  :items="['Paired t-test', 'Unpaired t-test', 'Korelasi Pearson', 'One Way Anova', 'Wilcoxon Rank Test', 'Mann Whitney U-test', 'Korelasi Spearman', 'Kruskal Wallis Test']"
+                  label="Chart"
+                  multiple
+                ></v-autocomplete>
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="blue-darken-1" variant="text" @click="dialog2 = false">
+            Tutup
+          </v-btn>
+          <v-btn color="blue-darken-1" variant="text" @click="dialog2 = false">
+            Simpan
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+  </v-row>
+    </div>
+
+    <div class="Chart">
+      <v-row justify="end">
+    <v-dialog v-model="dialog3" persistent width="1024">
+      <template v-slot:activator="{ props }">
+        <v-btn color="primary" v-bind="props" @click="openDialog(3)"> Visualisasi Data </v-btn>
+      </template>
+      <v-card>
+        <v-card-title>
+          <span class="text-h4">Pilih Visualisasi</span>
           <br>
           <span class="text-h5">Pilih Data</span>
         </v-card-title>
@@ -37,10 +129,10 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="blue-darken-1" variant="text" @click="dialog = false">
+          <v-btn color="blue-darken-1" variant="text" @click="dialog3 = false">
             Tutup
           </v-btn>
-          <v-btn color="blue-darken-1" variant="text" @click="dialog = false">
+          <v-btn color="blue-darken-1" variant="text" @click="dialog3 = false">
             Simpan
           </v-btn>
         </v-card-actions>
@@ -48,102 +140,6 @@
     </v-dialog>
   </v-row>
     </div>
-
-  <div class="inferensia">
-      <v-row justify="center">
-    <v-dialog v-model="dialog" persistent width="1024">
-      <template v-slot:activator="{ props }">
-        <v-btn color="primary" v-bind="props"> Statistik Inferensia </v-btn>
-      </template>
-      <v-card>
-        <v-card-title>
-          <span class="text-h5">Pilih Data</span>
-        </v-card-title>
-        <v-card-text>
-          <v-container>
-            <v-row>
-              <v-col cols="12" sm="6">
-                <v-select
-                  :items="['Kolom 1', 'Kolom 2', 'Kolom 3', 'Kolom 4']"
-                  label="Kolom"
-                  required
-                ></v-select>
-              </v-col>
-              <v-col cols="12" sm="6">
-                <v-autocomplete
-                  :items="['Bar Chart', 'Pie Chart', 'Area Chart', 'Line Chart', 'Scatter Plot']"
-                  label="Chart"
-                  multiple
-                ></v-autocomplete>
-              </v-col>
-            </v-row>
-          </v-container>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="blue-darken-1" variant="text" @click="dialog = false">
-            Tutup
-          </v-btn>
-          <v-btn color="blue-darken-1" variant="text" @click="dialog = false">
-            Simpan
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-  </v-row>
-    </div>
-
-  <div>
-    <!-- <a>Tabel</a> -->
-    <!-- <a>Bar Chart</a>
-    <a>Pie Chart</a>
-    <a>Area Chart</a>
-    <a>Line Chart</a>
-    <a>Scatter Chart</a> -->
-    <div class="Chart">
-      <v-row justify="end">
-    <v-dialog v-model="dialog" persistent width="1024">
-      <template v-slot:activator="{ props }">
-        <v-btn color="primary" v-bind="props"> Chart </v-btn>
-      </template>
-      <v-card>
-        <v-card-title>
-          <span class="text-h5">Pilih Data</span>
-        </v-card-title>
-        <v-card-text>
-          <v-container>
-            <v-row>
-              <v-col cols="12" sm="6">
-                <v-select
-                  :items="['Kolom 1', 'Kolom 2', 'Kolom 3', 'Kolom 4']"
-                  label="Kolom"
-                  required
-                ></v-select>
-              </v-col>
-              <v-col cols="12" sm="6">
-                <v-autocomplete
-                  :items="['Bar Chart', 'Pie Chart', 'Area Chart', 'Line Chart', 'Scatter Plot']"
-                  label="Chart"
-                  multiple
-                ></v-autocomplete>
-              </v-col>
-            </v-row>
-          </v-container>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="blue-darken-1" variant="text" @click="dialog = false">
-            Tutup
-          </v-btn>
-          <v-btn color="blue-darken-1" variant="text" @click="dialog = false">
-            Simpan
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-  </v-row>
-    </div>
-  </div>
 
   <div class="deskriptif">
     <a>Unduh Output</a>
@@ -178,14 +174,23 @@
     ></v-data-table>
   </v-card>
 </div>
-
+<div class="output">
+  <v-app>
+    <v-container>
+      <v-sheet :height="400" :width="900" color="blue-lighten-4" border rounded></v-sheet>
+    </v-container>
+  </v-app>
+</div>
 </template>
 
 <script>
 export default {
 data() {
   return {
-    dialog: [],
+    
+    dialog1: false,
+    dialog2: false,
+    dialog3: false,
     search: '',
         headers: [
           {
@@ -291,7 +296,17 @@ data() {
           },
         ],
   }
-}
+},
+methods: {
+      openDialog(dialogNumber) {
+        // Buka dialog sesuai dengan nomor dialog yang diberikan
+        this[`dialog${dialogNumber}`] = true;
+      },
+      closeDialog(dialogNumber) {
+      // Tutup dialog sesuai dengan nomor dialog yang diberikan
+      this[`dialog${dialogNumber}`] = false;
+    },
+  }
 }
 
 </script>

@@ -53,27 +53,9 @@
       <td>Data Sensus Penduduk Long Form 2020 (Data Keluarga) <BookIcon/></td>
     </tr>
   </tbody>
-  <font-awesome-icon icon="book-open" />
 </table>
 
-<nav aria-label="Page navigation example">
-  <ul class="pagination">
-    <li class="page-item">
-      <a class="page-link" href="#" aria-label="Previous">
-        <span aria-hidden="true">&laquo;</span>
-      </a>
-    </li>
-    <li class="page-item"><a class="page-link" href="#">1</a></li>
-    <li class="page-item"><a class="page-link" href="#">2</a></li>
-    <li class="page-item"><a class="page-link" href="#">3</a></li>
-    <li class="page-item">
-      <a class="page-link" href="#" aria-label="Next">
-        <span aria-hidden="true">&raquo;</span>
-      </a>
-    </li>
-  </ul>
-</nav>
-<div class="pagination-new">
+<div class="pagination">
   <v-pagination :length="5"></v-pagination>
 </div>
 </template>
@@ -150,36 +132,7 @@ export default {
   padding: 10px;
   text-align: left;
  }
- 
-
- .pagination {
-  display: flex;
-  justify-content:inherit;
-  align-items: center;
-  background-color: #fff;
-  /* padding: 1rem; */
-  float: right;
-  margin-right: 2%;
-  margin-top: 60px;
-}
-
-.pagination li {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 3px 7px;
-  text-decoration: none;
-  font-size: 10px;
-  font-weight: 600;
-  color: black;
-  border: 0.25px solid #756464;
-  border-radius: 2px;
-}
-
- .page-link {
-  color: #428DD1;
- }
-.pagination-new{
+.pagination{
   /* float: right; */
   position: absolute;
   right: 2%;

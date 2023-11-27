@@ -11,7 +11,7 @@
         <div class="dropdown-content">
           <a href="#">Ajudikasi</a>
           <a href="#">Data Eksplorasi</a>
-          <router-link  to="/sandboxing"><a>Data Sandboxing</a></router-link>
+          <router-link  to="/sandboxing" class="data-sandboxing"><a>Data Sandboxing</a></router-link>
           <a href="#">Tabel Dinamis</a>
         </div>
       </div>
@@ -60,6 +60,7 @@
   
   .dropdown .dropbtn {
     font-size: 16px;
+    font-weight: 600;
     border: none;
     color: #076f3d;
     padding: 14px 16px;
@@ -91,6 +92,9 @@
   
   .dropdown:hover .dropdown-content {
     display: block;
+  }
+  .data-sandboxing{
+    text-align: left;
   }
   </style>
   
