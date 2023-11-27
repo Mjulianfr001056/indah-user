@@ -137,7 +137,7 @@
   </v-row>
     </div>
 
-  <div class="output">
+  <div class="deskriptif">
     <a><img width="14" height="14" src="https://img.icons8.com/material-two-tone/14/000000/download--v1.png" alt="download--v1">Unduh Output</a>
     <button @click="views = 'PopUp'"><a><img width="14" height="14" src="https://img.icons8.com/small/14/insert-table.png" alt="insert-table"/>Tambahkan Data</a></button>
   </div>
