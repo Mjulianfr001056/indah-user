@@ -142,11 +142,6 @@
     <button @click="views = 'PopUp'"><a><img width="14" height="14" src="https://img.icons8.com/small/14/insert-table.png" alt="insert-table"/>Tambahkan Data</a></button>
   </div>
 
-    <div class="dropdown">
-      <button>Stripped Table</button>
-      <button>Highlight Row</button>
-    </div>
-
 <div class="table">
   <v-card
     flat
