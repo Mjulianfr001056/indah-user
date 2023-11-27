@@ -330,7 +330,7 @@ methods: {
     display: inline-block;
  }
 
- .statistik a, .deskriptif a{
+ .deskriptif a{
     font-size: 12px;
     font-weight: 600;
     font-style: inter;
@@ -338,9 +338,9 @@ methods: {
     color: white;
  }
 
- .statistik a:hover, .deskriptif a:hover {
+ .deskriptif a:hover {
     background-color: #138083;
-    padding: 10px 5px 8px 5px;
+    padding: 8px 20px 10px 7px;
  }
 
  p, .dropdown{
