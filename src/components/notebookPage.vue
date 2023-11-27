@@ -1,10 +1,6 @@
 <template>
-  <!-- <div class="statistik">
-    <a>Statistik Deskriptif</a>
-    <a>Statistik Inferensia</a>
-  </div> -->
-  <div class="deskriptif">
-      <v-row justify="start">
+  <div class="analisis-deskriptif">
+    <v-row justify="start">
     <v-dialog v-model="dialog1" persistent width="1024">
       <template v-slot:activator="{ props }">
         <v-btn color="primary" v-bind="props" @click="openDialog(1)">Statistik Deskriptif</v-btn>
@@ -141,7 +137,7 @@
   </v-row>
     </div>
 
-  <div class="deskriptif">
+  <div class="output">
     <a>Unduh Output</a>
     <button @click="views = 'PopUp'">Tambahkan Data</button>
   </div>

@@ -3,7 +3,6 @@ import dashboard from '../views/dashboard.vue'
 import sandboxing from '../views/sandboxingList.vue'
 import metadata from '../views/metadata.vue'
 import sandboxingPage from '@/views/sandboxingPage.vue'
-import sandboxingPageBackup from '@/views/sandboxingPage-backup.vue'
 import testnotebook from '@/others/notebook.vue'
 
 const routes = [
@@ -26,11 +25,6 @@ const routes = [
         name: 'SandboxingPage',
         path: '/sandboxing-page',
         component: sandboxingPage
-    },
-    {
-        name: 'SandboxingPagee',
-        path: '/sandboxing-page-backup',
-        component: sandboxingPageBackup
     },
     {
         name: 'test-notebook',
