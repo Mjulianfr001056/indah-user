@@ -1,147 +1,13 @@
 <template>
-  <div class="analisis-deskriptif">
-    <v-row justify="start">
-    <v-dialog v-model="dialog1" width="1024">
-      <template v-slot:activator="{ props }">
-        <v-btn color="#66BB6A" v-bind="props" @click="openDialog(1)">Statistik Deskriptif</v-btn>
-      </template>
-      <v-card>
-        <v-card-title>
-          <span class="text-h4">Statistik Deskriptif</span>
-          <br>
-          <span class="text-h5">Pilih Data</span>
-        </v-card-title>
-        <v-card-text>
-          <v-container>
-            <v-row>
-              <v-col cols="12" sm="6">
-                <v-select
-                  :items="['Kolom 1', 'Kolom 2', 'Kolom 3', 'Kolom 4']"
-                  label="Kolom"
-                  required
-                ></v-select>
-              </v-col>
-              <v-col cols="12" sm="6">
-                <v-autocomplete
-                  :items="['Rata-rata', 'Median', 'Modus', 'Simpangan Baku', 'Varians', 'Jangkauan', 'Jangkauan Antar Kuartil', 'Simpangan', 'Simpangan Rata-rata']"
-                  label="Deskriptif"
-                  multiple
-                ></v-autocomplete>
-              </v-col>
-            </v-row>
-          </v-container>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="blue-darken-1" variant="text" @click="dialog1 = false">
-            Tutup
-          </v-btn>
-          <v-btn color="blue-darken-1" variant="text" @click="dialog1 = false">
-            Simpan
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-  </v-row>
-    </div>
-
-  <div class="inferensia">
-      <v-row justify="center">
-    <v-dialog v-model="dialog2" width="1024">
-      <template v-slot:activator="{ props }">
-        <v-btn color="#66BB6A" v-bind="props" @click="openDialog(2)"> Statistik Inferensia </v-btn>
-      </template>
-      <v-card>
-        <v-card-title>
-          <span class="text-h5">Statistik Inferensia</span>
-          <br>
-          <span class="text-h6">Pilih Data</span>
-        </v-card-title>
-        <v-card-text>
-          <v-container>
-            <v-row>
-              <v-col cols="12" sm="6">
-                <v-select
-                  :items="['Kolom 1', 'Kolom 2', 'Kolom 3', 'Kolom 4']"
-                  label="Kolom"
-                  required
-                ></v-select>
-              </v-col>
-              <v-col cols="12" sm="6">
-                <v-autocomplete
-                  :items="['Paired t-test', 'Unpaired t-test', 'Korelasi Pearson', 'One Way Anova', 'Wilcoxon Rank Test', 'Mann Whitney U-test', 'Korelasi Spearman', 'Kruskal Wallis Test']"
-                  label="Uji Statistik"
-                  multiple
-                ></v-autocomplete>
-              </v-col>
-            </v-row>
-          </v-container>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="blue-darken-1" variant="text" @click="dialog2 = false">
-            Tutup
-          </v-btn>
-          <v-btn color="blue-darken-1" variant="text" @click="dialog2 = false">
-            Simpan
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-  </v-row>
-    </div>
-
-    <div class="Chart">
-      <v-row justify="end">
-    <v-dialog v-model="dialog3" width="1024">
-      <template v-slot:activator="{ props }">
-        <v-btn color="#66BB6A" v-bind="props" @click="openDialog(3)"> Visualisasi Data </v-btn>
-      </template>
-      <v-card>
-        <v-card-title>
-          <span class="text-h4">Pilih Visualisasi</span>
-          <br>
-          <span class="text-h5">Pilih Data</span>
-        </v-card-title>
-        <v-card-text>
-          <v-container>
-            <v-row>
-              <v-col cols="12" sm="6">
-                <v-select
-                  :items="['Kolom 1', 'Kolom 2', 'Kolom 3', 'Kolom 4']"
-                  label="Kolom"
-                  multiple
-                ></v-select>
-              </v-col>
-              <v-col cols="12" sm="6">
-                <v-autocomplete
-                  :items="['Bar Chart', 'Pie Chart', 'Area Chart', 'Line Chart', 'Scatter Plot']"
-                  label="Chart"
-                  multiple
-                ></v-autocomplete>
-              </v-col>
-            </v-row>
-          </v-container>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="blue-darken-1" variant="text" @click="dialog3 = false">
-            Tutup
-          </v-btn>
-          <v-btn color="blue-darken-1" variant="text" @click="dialog3 = false">
-            Simpan
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-  </v-row>
-    </div>
-
-    <div class="tambahdata">
-      <v-row justify="center">
+  <v-sheet class="d-flex">
+      <div class="ma pa me-auto">
+      <div class="tambah-data">
         <v-dialog v-model="dialog" scrollable width="auto">
           <template v-slot:activator="{ props }">
-            <v-btn color="#66BB6A" v-bind="props"> Tambahkan Data </v-btn>
+            <v-btn color="#43A047" v-bind="props"> Tambahkan Data </v-btn>
+            <v-spacer></v-spacer>
+            <v-spacer></v-spacer>
+            <v-spacer></v-spacer>
           </template>
           <v-card width="900px">
             <v-card-title>Pilih Data</v-card-title>
@@ -161,20 +27,155 @@
             </v-card-actions>
           </v-card>
         </v-dialog>
-      </v-row>
+      </div>
     </div>
 
-  <div class="kanan">
-  <div class="deskriptif">
-    <a><img width="14" height="14" src="https://img.icons8.com/material-two-tone/14/000000/download--v1.png" alt="download--v1">Unduh Output</a>
-    <!-- <button @click="views = 'PopUp'"><a><img width="14" height="14" src="https://img.icons8.com/small/14/insert-table.png" alt="insert-table"/>Tambahkan Data</a></button> -->
-  </div>
-  </div>
+    <div class="ma pa">
+      <div class="analisis-deskriptif">
+      <v-dialog v-model="dialog1" width="1024">
+        <template v-slot:activator="{ props }">
+            <v-btn color="#43A047" v-bind="props" @click="openDialog(1)">Statistik Deskriptif</v-btn>
+        </template>
+        <v-card>
+          <v-card-title>
+            <span class="text-h4">Statistik Deskriptif</span>
+            <br>
+            <span class="text-h5">Pilih Data</span>
+          </v-card-title>
+          <v-card-text>
+            <v-container>
+              <v-row>
+                <v-col cols="12" sm="6">
+                  <v-select
+                    :items="['Kolom 1', 'Kolom 2', 'Kolom 3', 'Kolom 4']"
+                    label="Kolom"
+                    required
+                  ></v-select>
+                </v-col>
+                <v-col cols="12" sm="6">
+                  <v-autocomplete
+                    :items="['Rata-rata', 'Median', 'Modus', 'Simpangan Baku', 'Varians', 'Jangkauan', 'Jangkauan Antar Kuartil', 'Simpangan', 'Simpangan Rata-rata']"
+                    label="Deskriptif"
+                    multiple
+                  ></v-autocomplete>
+                </v-col>
+              </v-row>
+            </v-container>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="blue-darken-1" variant="text" @click="dialog1 = false">
+              Tutup
+            </v-btn>
+            <v-btn color="blue-darken-1" variant="text" @click="dialog1 = false">
+              Simpan
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+    </div>
+    </div>
 
+    <div class="ma pa">
+    <div class="analisis-inferensia">
+      <v-dialog v-model="dialog2" width="1024">
+        <template v-slot:activator="{ props }">
+          <!-- <div class="button-container"> -->
+            <v-btn color="#43A047" v-bind="props" @click="openDialog(2)"> Statistik Inferensia </v-btn>
+          <!-- </div> -->
+        </template>
+        <v-card>
+          <v-card-title>
+            <span class="text-h5">Statistik Inferensia</span>
+            <br>
+            <span class="text-h6">Pilih Data</span>
+          </v-card-title>
+          <v-card-text>
+            <v-container>
+              <v-row>
+                <v-col cols="12" sm="6">
+                  <v-select
+                    :items="['Kolom 1', 'Kolom 2', 'Kolom 3', 'Kolom 4']"
+                    label="Kolom"
+                    required
+                  ></v-select>
+                </v-col>
+                <v-col cols="12" sm="6">
+                  <v-autocomplete
+                    :items="['Paired t-test', 'Unpaired t-test', 'Korelasi Pearson', 'One Way Anova', 'Wilcoxon Rank Test', 'Mann Whitney U-test', 'Korelasi Spearman', 'Kruskal Wallis Test']"
+                    label="Uji Statistik"
+                    multiple
+                  ></v-autocomplete>
+                </v-col>
+              </v-row>
+            </v-container>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="blue-darken-1" variant="text" @click="dialog2 = false">
+              Tutup
+            </v-btn>
+            <v-btn color="blue-darken-1" variant="text" @click="dialog2 = false">
+              Simpan
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+    </div>
+    </div>
+
+    <div class="ma pa">
+    <div class="visualisasi-data">
+      <v-dialog v-model="dialog3" width="1024">
+        <template v-slot:activator="{ props }">
+          <!-- <div class="button-container"> -->
+            <v-btn color="#43A047" v-bind="props" @click="openDialog(3)"> Visualisasi Data </v-btn>
+          <!-- </div> -->
+        </template>
+        <v-card>
+          <v-card-title>
+            <span class="text-h4">Pilih Visualisasi</span>
+            <br>
+            <span class="text-h5">Pilih Data</span>
+          </v-card-title>
+          <v-card-text>
+            <v-container>
+              <v-row>
+                <v-col cols="12" sm="6">
+                  <v-select
+                    :items="['Kolom 1', 'Kolom 2', 'Kolom 3', 'Kolom 4']"
+                    label="Kolom"
+                    multiple
+                  ></v-select>
+                </v-col>
+                <v-col cols="12" sm="6">
+                  <v-autocomplete
+                    :items="['Bar Chart', 'Pie Chart', 'Line Chart', 'Scatter Plot']"
+                    label="Chart"
+                    multiple
+                  ></v-autocomplete>
+                </v-col>
+              </v-row>
+            </v-container>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="blue-darken-1" variant="text" @click="dialog3 = false">
+              Tutup
+            </v-btn>
+            <v-btn color="blue-darken-1" variant="text" @click="dialog3 = false">
+              Simpan
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+    </div>
+  </div>
+</v-sheet>
 <div class="table">
   <v-card
     flat
-    title="Nutrition"
+    title="Notebook"
   >
     <template v-slot:text>
       <v-text-field
@@ -196,14 +197,19 @@
 </div>
 
 <div class="hasil">
-  <h1>
+  <p>
     Hasil
-  </h1>
+  </p>
   <v-app>
     <v-container>
       <v-sheet :height="400" :width="900" color="blue-lighten-4" border rounded class="box-hasil"></v-sheet>
     </v-container>
   </v-app>
+</div>
+<div class="kanan">
+  <div class="deskriptif">
+    <a><img width="14" height="14" src="https://img.icons8.com/material-two-tone/14/000000/download--v1.png" alt="download--v1">Unduh Output</a>
+  </div>
 </div>
 </template>
 
@@ -334,80 +340,58 @@ methods: {
     },
   }
 }
-
 </script>
 
 <style scoped>
+.d-flex{
+  margin-left: 2%;
+  margin-top: 20px;
+  margin-right: 2%;
+}
+.analisis-deskriptif, .analisis-inferensia, .visualisasi-data{
+  margin-left: 5%;
+}
+.statistik, .deskriptif {
+  padding: 5px 10px 7px 10px;
+  background-color: #17A3B4;
+  margin: 20px 0 10px 30px;
+  display: inline-block;
+}
 
- .fitur a {
-    padding: 20px 50px 10px 10px;
-    font-weight: 600;
-    color: white;
- }
-
- .fitur a:hover {
-    color: #428DD1;
-    background-color: white;
-    padding-right: 10px;
-    margin: 20px 50px 0 10px;
- }
-
-  .kanan {
-  text-align: right;
- }
-
- .statistik, .deskriptif {
-    padding: 5px 10px 7px 10px;
-    background-color: #17A3B4;
-    margin: 20px 0 10px 30px;
-    display: inline-block;
- }
-
- .deskriptif a{
+  .deskriptif a{
     font-size: 12px;
     font-weight: 600;
     font-style: inter;
     padding-right: 20px;  
     color: white;
- }
+  }
 
- .deskriptif a:hover {
+  .deskriptif a:hover {
     background-color: #138083;
     padding: 8px 20px 10px 7px;
- }
+  }
+  /* .tambah-data{
+    margin-left: 3%;
+  } */
 
- p, .dropdown{
-    padding-left: 30px;
-    margin-bottom: 20px;
- }
-
- button {
-    margin-right: 30px;
- }
-
- .kolom {
-    background-color: #428DD1;
-    padding: 0;
- }
-
- .tampil {
-    border: 1px solid black;
-    padding: 1px;
-    display: inline-block;
- }
-
- .table {
+.table {
     margin: 20px;
     margin-left: 25px;
     align-content: center;
- }
- td {
+}
+td {
     border-bottom: 1px #918A8A;
- }
- .hasil{
+}
+.hasil{
   margin-left: 2%;
- }
- div.hasil div.v-application.v-theme--light.v-layout.v-layout--full-height.v-locale--is-ltr div.v-application__wrap div.v-container.v-locale--is-ltr{
+}
+.hasil p{
+  font-size: 1.25rem;
+  font-weight: 500;
+	line-height: 2rem;
+}
+
+div.hasil div.v-application.v-theme--light.v-layout.v-layout--full-height.v-locale--is-ltr div.v-application__wrap div.v-container.v-locale--is-ltr{
   margin: 0px;
   padding-left: 0px;
 }

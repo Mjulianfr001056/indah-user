@@ -47,7 +47,7 @@
   .navbar a {
     font-size: 16px;
     font-weight: 600;
-    color: #076f3d;
+    color: #43A047;
     text-align: center;
     padding: 14px 16px;
     text-decoration: none;
@@ -63,7 +63,7 @@
     font-size: 16px;
     font-weight: 600;
     border: none;
-    color: #076f3d;
+    color: #43A047;
     padding: 14px 16px;
     margin: 0;
     background-color: #ffffff;
