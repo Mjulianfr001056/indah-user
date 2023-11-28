@@ -1,7 +1,7 @@
 <template>
     <div class="navbar">
       <a href="/"><img class="logo-indah" :src="image" alt="INDAH"/></a>
-      <a>Beranda</a>
+      <a href="/">Beranda</a>
       <a>Katalog Data</a>
       <a>Visualisasi</a>
       <a>Basis Pengetahuan</a>
@@ -11,7 +11,9 @@
         <div class="dropdown-content">
           <a href="#">Ajudikasi</a>
           <a href="#">Data Eksplorasi</a>
-          <router-link  to="/sandboxing" class="data-sandboxing"><a>Data Sandboxing</a></router-link>
+          <div  class="data-sandboxing">
+            <router-link  to="/sandboxing">Data Sandboxing</router-link>
+          </div>
           <a href="#">Tabel Dinamis</a>
         </div>
       </div>
@@ -35,7 +37,6 @@
     overflow: hidden;
     text-align: center;
     background-color: #ffffff;
-    /* float: left; */
     margin-left: 1%;
     max-width: max-content;
   }
@@ -46,7 +47,7 @@
   .navbar a {
     font-size: 16px;
     font-weight: 600;
-    color: #076f3d;
+    color: #43A047;
     text-align: center;
     padding: 14px 16px;
     text-decoration: none;
@@ -62,7 +63,7 @@
     font-size: 16px;
     font-weight: 600;
     border: none;
-    color: #076f3d;
+    color: #43A047;
     padding: 14px 16px;
     margin: 0;
     background-color: #ffffff;
@@ -92,9 +93,6 @@
   
   .dropdown:hover .dropdown-content {
     display: block;
-  }
-  .data-sandboxing{
-    text-align: left;
   }
   </style>
   
