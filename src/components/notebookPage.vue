@@ -3,7 +3,7 @@
     <v-row justify="start">
     <v-dialog v-model="dialog1" persistent width="1024">
       <template v-slot:activator="{ props }">
-        <v-btn color="primary" v-bind="props" @click="openDialog(1)">Statistik Deskriptif</v-btn>
+        <v-btn color="#66BB6A" v-bind="props" @click="openDialog(1)">Statistik Deskriptif</v-btn>
       </template>
       <v-card>
         <v-card-title>
@@ -49,7 +49,7 @@
       <v-row justify="center">
     <v-dialog v-model="dialog2" persistent width="1024">
       <template v-slot:activator="{ props }">
-        <v-btn color="primary" v-bind="props" @click="openDialog(2)"> Statistik Inferensia </v-btn>
+        <v-btn color="#66BB6A" v-bind="props" @click="openDialog(2)"> Statistik Inferensia </v-btn>
       </template>
       <v-card>
         <v-card-title>
@@ -95,7 +95,7 @@
       <v-row justify="end">
     <v-dialog v-model="dialog3" persistent width="1024">
       <template v-slot:activator="{ props }">
-        <v-btn color="primary" v-bind="props" @click="openDialog(3)"> Visualisasi Data </v-btn>
+        <v-btn color="#66BB6A" v-bind="props" @click="openDialog(3)"> Visualisasi Data </v-btn>
       </template>
       <v-card>
         <v-card-title>
@@ -137,10 +137,37 @@
   </v-row>
     </div>
 
+    <div class="tambahdata">
+      <v-row justify="center">
+        <v-dialog v-model="dialog" scrollable width="auto">
+          <template v-slot:activator="{ props }">
+            <v-btn color="#66BB6A" v-bind="props"> Tambahkan Data </v-btn>
+          </template>
+          <v-card>
+            <v-card-title>Pilih Data</v-card-title>
+            <v-divider></v-divider>
+            <v-card-text style="height: 300px">
+              <v-checkbox label="John" value="John"></v-checkbox>
+              <v-checkbox label="Jacob" value="Jacob"></v-checkbox>
+            </v-card-text>
+            <v-divider></v-divider>
+            <v-card-actions>
+              <v-btn color="blue-darken-1" variant="text" @click="dialog = false">
+                Tutup
+              </v-btn>
+              <v-btn color="blue-darken-1" variant="text" @click="dialog = false">
+                Simpan
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+      </v-row>
+    </div>
+
   <div class="kanan">
   <div class="deskriptif">
     <a><img width="14" height="14" src="https://img.icons8.com/material-two-tone/14/000000/download--v1.png" alt="download--v1">Unduh Output</a>
-    <button @click="views = 'PopUp'"><a><img width="14" height="14" src="https://img.icons8.com/small/14/insert-table.png" alt="insert-table"/>Tambahkan Data</a></button>
+    <!-- <button @click="views = 'PopUp'"><a><img width="14" height="14" src="https://img.icons8.com/small/14/insert-table.png" alt="insert-table"/>Tambahkan Data</a></button> -->
   </div>
   </div>
 
@@ -167,10 +194,14 @@
     ></v-data-table>
   </v-card>
 </div>
-<div class="output">
+
+<div class="hasil">
+  <h1>
+    Hasil
+  </h1>
   <v-app>
     <v-container>
-      <v-sheet :height="400" :width="900" color="blue-lighten-4" border rounded></v-sheet>
+      <v-sheet :height="400" :width="900" color="blue-lighten-4" border rounded class="box-hasil"></v-sheet>
     </v-container>
   </v-app>
 </div>
@@ -184,6 +215,8 @@ data() {
     dialog1: false,
     dialog2: false,
     dialog3: false,
+    dialogm1: '',
+    dialog: false,
     search: '',
         headers: [
           {
@@ -371,4 +404,11 @@ methods: {
  td {
     border-bottom: 1px #918A8A;
  }
+ .hasil{
+  margin-left: 2%;
+ }
+ div.hasil div.v-application.v-theme--light.v-layout.v-layout--full-height.v-locale--is-ltr div.v-application__wrap div.v-container.v-locale--is-ltr{
+  margin: 0px;
+  padding-left: 0px;
+}
 </style>
