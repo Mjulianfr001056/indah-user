@@ -5,16 +5,18 @@
         <v-dialog v-model="dialog" scrollable width="auto">
           <template v-slot:activator="{ props }">
             <v-btn color="#43A047" v-bind="props"> Tambahkan Data </v-btn>
-            <v-spacer></v-spacer>
-            <v-spacer></v-spacer>
-            <v-spacer></v-spacer>
           </template>
           <v-card width="900px">
             <v-card-title>Pilih Data</v-card-title>
             <v-divider></v-divider>
             <v-card-text style="height: 300px">
-              <v-checkbox label="John" value="John"></v-checkbox>
-              <v-checkbox label="Jacob" value="Jacob"></v-checkbox>
+              <v-container>
+                <v-radio-group>
+                  <v-radio label="Radio One" value="one"></v-radio>
+                  <v-radio label="Radio Two" value="two"></v-radio>
+                  <v-radio label="Radio Three" value="three"></v-radio>
+                </v-radio-group>
+              </v-container>
             </v-card-text>
             <v-divider></v-divider>
             <v-card-actions class="justify-end">
@@ -202,7 +204,7 @@
   </p>
   <v-app>
     <v-container>
-      <v-sheet :height="400" :width="900" color="blue-lighten-4" border rounded class="box-hasil"></v-sheet>
+      <v-sheet :height="600"  color="blue-lighten-4" border rounded class="box-hasil"></v-sheet>
     </v-container>
   </v-app>
 </div>
