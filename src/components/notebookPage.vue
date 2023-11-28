@@ -1,7 +1,7 @@
 <template>
   <div class="analisis-deskriptif">
     <v-row justify="start">
-    <v-dialog v-model="dialog1" persistent width="1024">
+    <v-dialog v-model="dialog1" width="1024">
       <template v-slot:activator="{ props }">
         <v-btn color="#66BB6A" v-bind="props" @click="openDialog(1)">Statistik Deskriptif</v-btn>
       </template>
@@ -24,7 +24,7 @@
               <v-col cols="12" sm="6">
                 <v-autocomplete
                   :items="['Rata-rata', 'Median', 'Modus', 'Simpangan Baku', 'Varians', 'Jangkauan', 'Jangkauan Antar Kuartil', 'Simpangan', 'Simpangan Rata-rata']"
-                  label="Chart"
+                  label="Deskriptif"
                   multiple
                 ></v-autocomplete>
               </v-col>
@@ -47,7 +47,7 @@
 
   <div class="inferensia">
       <v-row justify="center">
-    <v-dialog v-model="dialog2" persistent width="1024">
+    <v-dialog v-model="dialog2" width="1024">
       <template v-slot:activator="{ props }">
         <v-btn color="#66BB6A" v-bind="props" @click="openDialog(2)"> Statistik Inferensia </v-btn>
       </template>
@@ -70,7 +70,7 @@
               <v-col cols="12" sm="6">
                 <v-autocomplete
                   :items="['Paired t-test', 'Unpaired t-test', 'Korelasi Pearson', 'One Way Anova', 'Wilcoxon Rank Test', 'Mann Whitney U-test', 'Korelasi Spearman', 'Kruskal Wallis Test']"
-                  label="Chart"
+                  label="Uji Statistik"
                   multiple
                 ></v-autocomplete>
               </v-col>
@@ -93,7 +93,7 @@
 
     <div class="Chart">
       <v-row justify="end">
-    <v-dialog v-model="dialog3" persistent width="1024">
+    <v-dialog v-model="dialog3" width="1024">
       <template v-slot:activator="{ props }">
         <v-btn color="#66BB6A" v-bind="props" @click="openDialog(3)"> Visualisasi Data </v-btn>
       </template>
@@ -110,7 +110,7 @@
                 <v-select
                   :items="['Kolom 1', 'Kolom 2', 'Kolom 3', 'Kolom 4']"
                   label="Kolom"
-                  required
+                  multiple
                 ></v-select>
               </v-col>
               <v-col cols="12" sm="6">
@@ -143,7 +143,7 @@
           <template v-slot:activator="{ props }">
             <v-btn color="#66BB6A" v-bind="props"> Tambahkan Data </v-btn>
           </template>
-          <v-card>
+          <v-card width="900px">
             <v-card-title>Pilih Data</v-card-title>
             <v-divider></v-divider>
             <v-card-text style="height: 300px">
@@ -151,7 +151,7 @@
               <v-checkbox label="Jacob" value="Jacob"></v-checkbox>
             </v-card-text>
             <v-divider></v-divider>
-            <v-card-actions>
+            <v-card-actions class="justify-end">
               <v-btn color="blue-darken-1" variant="text" @click="dialog = false">
                 Tutup
               </v-btn>
