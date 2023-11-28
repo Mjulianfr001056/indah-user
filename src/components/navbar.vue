@@ -1,7 +1,7 @@
 <template>
     <div class="navbar">
       <a href="/"><img class="logo-indah" :src="image" alt="INDAH"/></a>
-      <a>Beranda</a>
+      <a href="/">Beranda</a>
       <a>Katalog Data</a>
       <a>Visualisasi</a>
       <a>Basis Pengetahuan</a>
