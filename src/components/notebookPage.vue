@@ -41,17 +41,16 @@
             <v-card-title>
               <span class="text-h4">Statistik Deskriptif</span>
               <br>
-              <span class="text-h5">Pilih Data</span>
+              <span class="text-h5">Pilih kolom</span>
             </v-card-title>
             <v-card-text>
               <v-container>
                 <v-row>
                   <v-col cols="12" sm="6">
-                    <v-select :items="['Kolom 1', 'Kolom 2', 'Kolom 3', 'Kolom 4']" label="Kolom" required></v-select>
+                    <v-select v-model="selectedColumns" :items=headersArray label="Kolom" required multiple></v-select>
                   </v-col>
                   <v-col cols="12" sm="6">
-                    <v-autocomplete
-                      :items="['Rata-rata', 'Median', 'Modus', 'Simpangan Baku', 'Varians', 'Jangkauan', 'Jangkauan Antar Kuartil', 'Simpangan', 'Simpangan Rata-rata']"
+                    <v-autocomplete v-model="selectedDescriptiveStats" :items="['Summary', 'Correlation']"
                       label="Deskriptif" multiple></v-autocomplete>
                   </v-col>
                 </v-row>
@@ -59,10 +58,10 @@
             </v-card-text>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn color="blue-darken-1" variant="text" @click="dialog1 = false">
+              <v-btn color="blue-darken-1" variant="text" @click="tutupDialog">
                 Tutup
               </v-btn>
-              <v-btn color="blue-darken-1" variant="text" @click="dialog1 = false">
+              <v-btn color="blue-darken-1" variant="text" @click="pilihDeskriptif">
                 Simpan
               </v-btn>
             </v-card-actions>
@@ -89,12 +88,10 @@
               <v-container>
                 <v-row>
                   <v-col cols="12" sm="6">
-                    <v-select :items="['Kolom 1', 'Kolom 2', 'Kolom 3', 'Kolom 4']" label="Kolom" required></v-select>
+                    <v-autocomplete :items=availableInfentialStats label="Uji Statistik" multiple></v-autocomplete>
                   </v-col>
                   <v-col cols="12" sm="6">
-                    <v-autocomplete
-                      :items="['Paired t-test', 'Unpaired t-test', 'Korelasi Pearson', 'One Way Anova', 'Wilcoxon Rank Test', 'Mann Whitney U-test', 'Korelasi Spearman', 'Kruskal Wallis Test']"
-                      label="Uji Statistik" multiple></v-autocomplete>
+                    <v-select :items=headersArray label="Kolom" required></v-select>
                   </v-col>
                 </v-row>
               </v-container>
@@ -131,7 +128,7 @@
               <v-container>
                 <v-row>
                   <v-col cols="12" sm="6">
-                    <v-select :items="['Kolom 1', 'Kolom 2', 'Kolom 3', 'Kolom 4']" label="Kolom" multiple></v-select>
+                    <v-select :items=headersArray label="Kolom" multiple></v-select>
                   </v-col>
                   <v-col cols="12" sm="6">
                     <v-autocomplete :items="['Bar Chart', 'Pie Chart', 'Line Chart', 'Scatter Plot']" label="Chart"
@@ -171,7 +168,11 @@
     </p>
     <v-app>
       <v-container>
-        <v-sheet :height="600" color="blue-lighten-4" border rounded class="box-hasil"></v-sheet>
+        <v-sheet :height="600" width="100%" color="blue-lighten-4" border rounded class="box-hasil">
+          <template v-if="visualObject && visualObject.length > 0">
+            {{ visualObject }}
+          </template>
+        </v-sheet>
       </v-container>
     </v-app>
   </div>
@@ -196,10 +197,16 @@ export default {
       dialogm1: '',
       tambahDataDialog: false,
       search: '',
+      headersArray: [],
       dataHeaders: [],
       dataContents: [],
       katalogData: [],
-      idDataTerpilih: null
+      selectedColumns: [],
+      selectedDescriptiveStats: [],
+      summaryEntity: [],
+      availableInfentialStats: ['Paired t-test', 'Unpaired t-test', 'One Way Anova', 'Wilcoxon Rank Test', 'Mann Whitney U-test', 'Kruskal Wallis Test'],
+      idDataTerpilih: null,
+      visualObject: [],
     }
   },
   methods: {
@@ -211,18 +218,46 @@ export default {
     },
     simpanDataDialog() {
       this.tutupDialog();
-      console.log('id data terpilih: ' + this.idDataTerpilih);
       axios.get('http://localhost:8080/api/v1/data/' + this.idDataTerpilih)
         .then(response => {
-          const headers = response.data.entity.headers;
+          this.headersArray = response.data.entity.headers;
 
-          const mappedHeaders = headers.map((key) => {
-            return { key, title: key};
+          const mappedHeaders = this.headersArray.map((key) => {
+            return { key, title: key };
           });
 
           const contents = response.data.entity.contents.map(jsonString => JSON.parse(jsonString));
           this.dataHeaders = mappedHeaders;
           this.dataContents = contents;
+        })
+        .catch(error => {
+          console.error('Error fetching data:', error);
+        });
+    },
+    pilihDeskriptif() {
+      this.dialog1 = false
+      const descriptiveRequest = {
+        tableId: this.idDataTerpilih,
+        columnNames: this.selectedColumns,
+        descriptiveMethods: this.selectedDescriptiveStats
+      }
+
+      axios.post('http://localhost:8080/api/v1/desc', descriptiveRequest)
+        .then(response => {
+          const tmp = response.data.entity;
+
+          Object.entries(tmp).forEach(([key, value]) => {
+            switch (key) {
+              case "Summary":
+                this.visualObject.push(JSON.parse(value));
+                break;
+              case "Correlation":
+                this.visualObject.push(value);
+                break;
+              default:
+                break;
+            }
+          });
         })
         .catch(error => {
           console.error('Error fetching data:', error);
@@ -242,7 +277,7 @@ export default {
     const katalogDataRequest = {
       tableName: 'katalog_data',
       columnNames: ['id', 'judul']
-    };
+    }
 
     axios.post('http://localhost:8080/api/v1/data', katalogDataRequest)
       .then(response => {
