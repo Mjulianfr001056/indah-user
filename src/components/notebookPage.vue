@@ -45,13 +45,12 @@
             </v-card-title>
             <v-card-text>
               <v-container>
-                <v-row>
-                  <v-col cols="12" sm="6">
+                <v-row required>
+                  <v-col cols="12" sm="6" required>
                     <v-select v-model="selectedColumns" :items=headersArray label="Kolom" required multiple></v-select>
                   </v-col>
-                  <v-col cols="12" sm="6">
-                    <v-autocomplete v-model="selectedDescriptiveStats" :items="['Summary', 'Correlation']"
-                      label="Deskriptif" multiple></v-autocomplete>
+                  <v-col cols="12" sm="6" required>
+                    <v-autocomplete v-model="selectedDescriptiveStats" :items="['Summary', 'Correlation']" label="Deskriptif" multiple required></v-autocomplete>
                   </v-col>
                 </v-row>
               </v-container>
@@ -74,9 +73,7 @@
       <div class="analisis-inferensia">
         <v-dialog v-model="dialog2" width="1024">
           <template v-slot:activator="{ props }">
-            <!-- <div class="button-container"> -->
             <v-btn color="#43A047" v-bind="props" @click="openDialog(2)"> Statistik Inferensia </v-btn>
-            <!-- </div> -->
           </template>
           <v-card>
             <v-card-title>
@@ -88,7 +85,7 @@
               <v-container>
                 <v-row>
                   <v-col cols="12" sm="6">
-                    <v-autocomplete :items=availableInfentialStats label="Uji Statistik" multiple></v-autocomplete>
+                    <v-autocomplete :items=availableInfentialStats label="Uji Statistik" multiple required></v-autocomplete>
                   </v-col>
                   <v-col cols="12" sm="6">
                     <v-select :items=headersArray label="Kolom" required></v-select>
@@ -114,9 +111,7 @@
       <div class="visualisasi-data">
         <v-dialog v-model="dialog3" width="1024">
           <template v-slot:activator="{ props }">
-            <!-- <div class="button-container"> -->
             <v-btn color="#43A047" v-bind="props" @click="openDialog(3)"> Visualisasi Data </v-btn>
-            <!-- </div> -->
           </template>
           <v-card>
             <v-card-title>
@@ -126,13 +121,12 @@
             </v-card-title>
             <v-card-text>
               <v-container>
-                <v-row>
-                  <v-col cols="12" sm="6">
-                    <v-select :items=headersArray label="Kolom" multiple></v-select>
+                <v-row required>
+                  <v-col cols="12" sm="6" required>
+                    <v-select v-model="selectedColumns" :items=headersArray label="Kolom" multiple required></v-select>
                   </v-col>
-                  <v-col cols="12" sm="6">
-                    <v-autocomplete :items="['Bar Chart', 'Pie Chart', 'Line Chart', 'Scatter Plot']" label="Chart"
-                      multiple></v-autocomplete>
+                  <v-col cols="12" sm="6" required>
+                    <v-autocomplete v-model="selectedCharts" :items="['Bar Chart', 'Pie Chart', 'Line Chart', 'Scatter Plot']" label="Chart" multiple required></v-autocomplete>
                   </v-col>
                 </v-row>
               </v-container>
@@ -142,7 +136,7 @@
               <v-btn color="blue-darken-1" variant="text" @click="tutupDialog">
                 Tutup
               </v-btn>
-              <v-btn color="blue-darken-1" variant="text" @click="simpanDataDialog">
+              <v-btn color="blue-darken-1" variant="text" @click="pilihVisualisasi">
                 Simpan
               </v-btn>
             </v-card-actions>
@@ -163,24 +157,22 @@
   </div>
 
   <div class="hasil">
-    <p>
-      Hasil
-    </p>
-    <v-app>
+    <v-sheet class="d-flex mb-6">
+      <v-sheet class="ma-2 pa-2 me-auto"><p>Hasil</p></v-sheet>
+      <v-sheet class="ma-2 pa-2"><v-btn color="#43A047">
+        Unduh
+      </v-btn></v-sheet>
+    </v-sheet>
+
+    <v-app class="box-output">
       <v-container>
-        <v-sheet :height="600" width="100%" color="blue-lighten-4" border rounded class="box-hasil">
+        <v-sheet :height="600" width="102%" color="blue-lighten-4" border rounded class="box-hasil">
           <template v-if="visualObject && visualObject.length > 0">
             {{ visualObject }}
           </template>
         </v-sheet>
       </v-container>
     </v-app>
-  </div>
-  <div class="kanan">
-    <div class="deskriptif">
-      <a><img width="14" height="14" src="https://img.icons8.com/material-two-tone/14/000000/download--v1.png"
-          alt="download--v1">Unduh Output</a>
-    </div>
   </div>
 </template>
 
@@ -203,6 +195,7 @@ export default {
       katalogData: [],
       selectedColumns: [],
       selectedDescriptiveStats: [],
+      selectedCharts: [],
       summaryEntity: [],
       availableInfentialStats: ['Paired t-test', 'Unpaired t-test', 'One Way Anova', 'Wilcoxon Rank Test', 'Mann Whitney U-test', 'Kruskal Wallis Test'],
       idDataTerpilih: null,
@@ -215,6 +208,9 @@ export default {
       this.dialog1 = false;
       this.dialog2 = false;
       this.dialog3 = false;
+      this.selectedColumns = [];
+      this.selectedDescriptiveStats = [];
+      this.selectedCharts = [];
     },
     simpanDataDialog() {
       this.$emit('tableIdChanged', this.idDataTerpilih);
@@ -237,9 +233,26 @@ export default {
         .catch(error => {
           console.error('Error fetching data:', error);
         });
+        this.selectedColumns = [];
+        this.selectedDescriptiveStats = [];
+        this.selectedCharts = [];
     },
     pilihDeskriptif() {
       this.dialog1 = false
+      // Memeriksa apakah v-col sudah diisi
+      if (!this.selectedColumns || this.selectedColumns.length === 0) {
+        this.tampilkanAlert('Anda Belum Memilih Kolom');
+        return;
+      }
+
+      // Memeriksa apakah v-autocomplete sudah diisi
+      if (!this.selectedDescriptiveStats || this.selectedDescriptiveStats.length === 0) {
+        this.tampilkanAlert('Anda Belum Memilih Deskriptif');
+        return;
+      }
+
+      this.selectedColumns = [];
+      this.selectedDescriptiveStats = [];    
 
       const descriptiveRequest = {
         'ngrok-skip-browser-warning': 'true',
@@ -269,6 +282,22 @@ export default {
           console.error('Error fetching data:', error);
         });
     },
+    pilihVisualisasi() {
+      this.dialog1 = false
+      // Memeriksa apakah v-col sudah diisi
+      if (!this.selectedColumns || this.selectedColumns.length === 0) {
+        this.tampilkanAlert('Anda Belum Memilih Kolom');
+        return;
+      }
+
+      // Memeriksa apakah v-autocomplete sudah diisi
+      if (!this.selectedCharts || this.selectedCharts.length === 0) {
+        this.tampilkanAlert('Anda Belum Memilih Visualisasi');
+        return;
+      }
+      this.selectedColumns = [];
+      this.selectedCharts = [];
+    },
     openDialog(dialogNumber) {
       // Buka dialog sesuai dengan nomor dialog yang diberikan
       this[`dialog${dialogNumber}`] = true;
@@ -276,6 +305,10 @@ export default {
     closeDialog(dialogNumber) {
       // Tutup dialog sesuai dengan nomor dialog yang diberikan
       this[`dialog${dialogNumber}`] = false;
+    },
+    tampilkanAlert(pesan) {
+      // Metode untuk menampilkan alert
+      alert(pesan);
     },
   },
   mounted() {
@@ -312,36 +345,9 @@ export default {
   margin-right: 2%;
 }
 
-.analisis-deskriptif,
-.analisis-inferensia,
-.visualisasi-data {
+.analisis-deskriptif, .analisis-inferensia, .visualisasi-data {
   margin-left: 5%;
 }
-
-.statistik,
-.deskriptif {
-  padding: 5px 10px 7px 10px;
-  background-color: #17A3B4;
-  margin: 20px 0 10px 30px;
-  display: inline-block;
-}
-
-.deskriptif a {
-  font-size: 12px;
-  font-weight: 600;
-  font-style: inter;
-  padding-right: 20px;
-  color: white;
-}
-
-.deskriptif a:hover {
-  background-color: #138083;
-  padding: 8px 20px 10px 7px;
-}
-
-/* .tambah-data{
-    margin-left: 3%;
-  } */
 
 .table {
   margin: 20px;
@@ -354,7 +360,8 @@ td {
 }
 
 .hasil {
-  margin-left: 2%;
+  margin-right: 2%;
+  margin-bottom: 0px;
 }
 
 .hasil p {
@@ -363,8 +370,7 @@ td {
   line-height: 2rem;
 }
 
-div.hasil div.v-application.v-theme--light.v-layout.v-layout--full-height.v-locale--is-ltr div.v-application__wrap div.v-container.v-locale--is-ltr {
-  margin: 0px;
-  padding-left: 0px;
+.box-output{
+  margin-left: 2%;
 }
 </style>
