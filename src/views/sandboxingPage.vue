@@ -2,37 +2,50 @@
   <v-card>
     <v-tabs v-model="tab" bg-color="primary">
       <v-tab value="notebook">Notebook</v-tab>
-      <v-tab value="data">Data</v-tab>
+      <v-tab value="keterangan">Keterangan</v-tab>
     </v-tabs>
 
     <v-card-text>
       <v-window v-model="tab">
-        <v-window-item value="notebook"> <notebook/> </v-window-item>
+        <v-window-item value="notebook">
+          <notebook @tableIdChanged="handleTableIdChanged"/>
+        </v-window-item>
 
-        <v-window-item value="data"> <dataNotebook/> </v-window-item>
+        <v-window-item value="keterangan">
+          <MetadataPage :tableId="globalTableId" ref="metaPageRef" />
+        </v-window-item>
       </v-window>
     </v-card-text>
   </v-card>
 </template>
 
 <script>
-import notebook from "../components/notebookPage.vue"
-import dataNotebook from "../components/dataPage.vue"
+import notebook from "../components/notebookPage.vue";
+import MetadataPage from "../components/metadataPage.vue";
 
 export default {
-name: 'App',
-components: {
-  notebook, dataNotebook
-},
-data(){
-  return{
+  name: 'App',
+  components: {
+    notebook,
+    MetadataPage,
+  },
+  data() {
+    return {
       layout: 'notebookActive',
       tab: 'Notebook',
-      items: ['Notebook', 'Data']
-  }
-}
-}
+      items: ['Notebook', 'keterangan'],
+      globalTableId: '',
+    };
+  },
+  methods: {
+    handleTableIdChanged(newTableId) {
+      this.globalTableId = newTableId;
+      //this.$refs.metaPageRef.fetchData();
+    },
+  },
+};
 </script>
+
 
 <style scoped>
 .vcard{
