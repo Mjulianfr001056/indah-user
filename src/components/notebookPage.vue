@@ -217,8 +217,11 @@ export default {
       this.dialog3 = false;
     },
     simpanDataDialog() {
+      const headers = {
+        'ngrok-skip-browser-warning': 'true'
+      }
       this.tutupDialog();
-      axios.get('http://localhost:8080/api/v1/data/' + this.idDataTerpilih)
+      axios.get(' https://ca67-110-138-125-213.ngrok-free.app/api/v1/data/' + this.idDataTerpilih, { headers })
         .then(response => {
           this.headersArray = response.data.entity.headers;
 
@@ -236,13 +239,15 @@ export default {
     },
     pilihDeskriptif() {
       this.dialog1 = false
+
       const descriptiveRequest = {
+        'ngrok-skip-browser-warning': 'true',
         tableId: this.idDataTerpilih,
         columnNames: this.selectedColumns,
         descriptiveMethods: this.selectedDescriptiveStats
       }
 
-      axios.post('http://localhost:8080/api/v1/desc', descriptiveRequest)
+      axios.post(' https://ca67-110-138-125-213.ngrok-free.app/api/v1/desc', descriptiveRequest)
         .then(response => {
           const tmp = response.data.entity;
 
@@ -273,13 +278,13 @@ export default {
     },
   },
   mounted() {
-
     const katalogDataRequest = {
+      'ngrok-skip-browser-warning': 'true',
       tableName: 'katalog_data',
       columnNames: ['id', 'judul']
     }
 
-    axios.post('http://localhost:8080/api/v1/data', katalogDataRequest)
+    axios.post(' https://ca67-110-138-125-213.ngrok-free.app/api/v1/data', katalogDataRequest)
       .then(response => {
         const parsedData = response.data.entity.map(jsonString => JSON.parse(jsonString));
         const sortedData = parsedData.sort((a, b) => {
