@@ -167,9 +167,13 @@
     <v-app class="box-output">
       <v-container>
         <v-sheet :height="600" width="102%" color="blue-lighten-4" border rounded class="box-hasil">
-          <template v-if="visualObject && visualObject.length > 0">
+          <!-- <template v-if="visualObject && visualObject.length > 0">
             {{ visualObject }}
-          </template>
+          </template> -->
+          <!-- <BarChartComponent /> -->
+          <!-- <ScatterPlotComponent /> -->
+          <!-- <PieChartComponent /> -->
+          <LineChartComponent />
         </v-sheet>
       </v-container>
     </v-app>
@@ -178,8 +182,19 @@
 
 <script>
 import axios from 'axios';
+// import BarChartComponent from './BarChartComponent.vue';
+// import ScatterPlotComponent from './ScatterPlotComponent.vue';
+// import PieChartComponent from './PieChartComponent.vue';
+import LineChartComponent from './LineChartComponent.vue';
 
 export default {
+  components: {
+    // BarChartComponent,
+    // ScatterPlotComponent,
+    // PieChartComponent,
+    LineChartComponent,
+  },
+
   data() {
     return {
 
