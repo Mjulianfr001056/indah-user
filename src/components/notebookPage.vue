@@ -213,11 +213,12 @@ export default {
       this.selectedCharts = [];
     },
     simpanDataDialog() {
+      this.$emit('tableIdChanged', this.idDataTerpilih);
       const headers = {
         'ngrok-skip-browser-warning': 'true'
       }
       this.tutupDialog();
-      axios.get('https://3067-110-138-125-213.ngrok-free.app/' + this.idDataTerpilih, { headers })
+      axios.get(' https://3067-110-138-125-213.ngrok-free.app/api/v1/data/' + this.idDataTerpilih, { headers })
         .then(response => {
           this.headersArray = response.data.entity.headers;
 
@@ -260,7 +261,7 @@ export default {
         descriptiveMethods: this.selectedDescriptiveStats
       }
 
-      axios.post('https://3067-110-138-125-213.ngrok-free.app/', descriptiveRequest)
+      axios.post(' https://3067-110-138-125-213.ngrok-free.app/api/v1/desc', descriptiveRequest)
         .then(response => {
           const tmp = response.data.entity;
 
@@ -317,7 +318,7 @@ export default {
       columnNames: ['id', 'judul']
     }
 
-    axios.post('https://3067-110-138-125-213.ngrok-free.app/', katalogDataRequest)
+    axios.post(' https://3067-110-138-125-213.ngrok-free.app/api/v1/data', katalogDataRequest)
       .then(response => {
         const parsedData = response.data.entity.map(jsonString => JSON.parse(jsonString));
         const sortedData = parsedData.sort((a, b) => {
