@@ -73,9 +73,7 @@
       <div class="analisis-inferensia">
         <v-dialog v-model="dialog2" width="1024">
           <template v-slot:activator="{ props }">
-            <!-- <div class="button-container"> -->
             <v-btn color="#43A047" v-bind="props" @click="openDialog(2)"> Statistik Inferensia </v-btn>
-            <!-- </div> -->
           </template>
           <v-card>
             <v-card-title>
