@@ -3,6 +3,7 @@ import dashboard from '../views/dashboard.vue'
 import sandboxing from '../views/sandboxingList.vue'
 import metadata from '../views/metadata.vue'
 import sandboxingPage from '@/views/sandboxingPage.vue'
+import test from '@/components/test.vue'
 
 const routes = [
     {
@@ -25,6 +26,11 @@ const routes = [
         path: '/sandboxing-page',
         component: sandboxingPage
     },
+    {
+        name: 'test',
+        path: '/test',
+        component : test
+    }
 ];
 const router = Router();
 export default router;

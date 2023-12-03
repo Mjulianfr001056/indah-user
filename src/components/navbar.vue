@@ -1,6 +1,6 @@
 <template>
     <div class="navbar">
-      <a href="/"><img class="logo-indah" :src="image" alt="INDAH"/></a>
+      <a href="/" class="logo"><img class="logo-indah" :src="image" alt="INDAH"/></a>
       <a href="/">Beranda</a>
       <a>Katalog Data</a>
       <a>Visualisasi</a>
@@ -50,6 +50,9 @@
     padding: 12px 16px;
     text-decoration: none;
     float: left;
+  }
+  a.logo{
+    padding-bottom: 7.5px;
   }
   .logo-indah{
     max-height: 22px;
