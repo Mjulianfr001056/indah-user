@@ -45,7 +45,6 @@
         flex-wrap: wrap;
     }
     li {
-        /* border: solid 1px green; */
         font-size: 14px;
         width: 50%;
         text-align: left;

@@ -12,7 +12,7 @@
           <a href="#">Ajudikasi</a>
           <a href="#">Data Eksplorasi</a>
           <div  class="data-sandboxing">
-            <router-link  to="/sandboxing">Data Sandboxing</router-link>
+            <router-link to="/sandboxing">Data Sandboxing</router-link>
           </div>
           <a href="#">Tabel Dinamis</a>
         </div>
@@ -41,19 +41,19 @@
     max-width: max-content;
   }
   
-  .logo-indah{
-    max-width: 107px;
-  }
+  
   .navbar a {
     font-size: 16px;
     font-weight: 600;
     color: #076f3d;
     text-align: center;
-    padding: 14px 16px;
+    padding: 12px 16px;
     text-decoration: none;
     float: left;
   }
-  
+  .logo-indah{
+    max-height: 22px;
+  }
   .dropdown {
     float: right;
     overflow: hidden;
@@ -64,7 +64,7 @@
     font-weight: 600;
     border: none;
     color: #076f3d;
-    padding: 14px 16px;
+    padding: 12px 16px;
     margin: 0;
     background-color: #ffffff;
     cursor: pointer;
