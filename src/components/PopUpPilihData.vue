@@ -43,8 +43,8 @@ export default{
 }
 </script>
 
-<style scoped>
+<!-- <style scoped>
     .close{
         /* float: right; */
     }
-</style>
+</style> -->
