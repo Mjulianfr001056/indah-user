@@ -41,11 +41,19 @@ export default {
                 var parsedData = response.data.entity.map(jsonString => JSON.parse(jsonString));
                 var labels = parsedData.map(data => data.provinsi);
                 var data = parsedData.map(data => data.durian);
+
+                // Define an array of 5 pastel colors
+                var colors = ['#FFB3BA', '#FFDFBA', '#FFFFBA', '#BAFFC9', '#BAE1FF'];
+
+                // Map the data to colors
+                var backgroundColors = data.map((_, i) => colors[i % colors.length]);
+
                 this.data = {
                     labels: labels,
                     datasets: [
                         {
-                            data: data
+                            data: data,
+                            backgroundColor: backgroundColors
                         }
                     ]
                 }

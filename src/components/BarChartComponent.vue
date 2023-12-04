@@ -43,24 +43,34 @@ export default {
     mounted() {
         // this.fetchData()
         const headers = {
-                'ngrok-skip-browser-warning': 'true',
-                tableName: 'data_sampel5',
-                columnNames: ['provinsi', 'semangka']
-            }
+            'ngrok-skip-browser-warning': 'true',
+            tableName: 'data_sampel5',
+            columnNames: ['provinsi', 'semangka']
+        }
 
-            axios.post('http://localhost:8080/api/v1/data', headers)
-                .then(response => {
-                    var parsedData = response.data.entity.map(jsonString => JSON.parse(jsonString));
-                    var labels = parsedData.map(data => data.provinsi);
-                    var data = parsedData.map(data => data.semangka);
-                    this.chartData = {
-                        labels: labels,
-                        datasets: [{ data: data }]
-                    }
-                })
-                .catch(error => {
-                    console.log(error);
-                });
+        axios.post('http://localhost:8080/api/v1/data', headers)
+            .then(response => {
+                var parsedData = response.data.entity.map(jsonString => JSON.parse(jsonString));
+                var labels = parsedData.map(data => data.provinsi);
+                var data = parsedData.map(data => data.semangka);
+
+                // Define an array of 5 colors
+                var colors = ['#FFB3BA', '#FFDFBA', '#FFFFBA', '#BAFFC9', '#BAE1FF'];
+
+                // Map the data to colors
+                var backgroundColors = data.map((_, i) => colors[i % colors.length]);
+
+                this.chartData = {
+                    labels: labels,
+                    datasets: [{
+                        data: data,
+                        backgroundColor: backgroundColors
+                    }]
+                }
+            })
+            .catch(error => {
+                console.log(error);
+            });
     }
 }
 </script>

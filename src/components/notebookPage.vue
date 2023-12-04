@@ -126,7 +126,7 @@
                     <v-select v-model="selectedColumns" :items=headersArray label="Kolom" multiple required></v-select>
                   </v-col>
                   <v-col cols="12" sm="6" required>
-                    <v-autocomplete v-model="selectedCharts" :items="['Bar Chart', 'Pie Chart', 'Line Chart', 'Scatter Plot']" label="Chart" multiple required></v-autocomplete>
+                    <v-autocomplete v-model="selectedCharts" :items="['Bar Chart', 'Pie Chart', 'Line Chart', 'Scatter Plot']" label="Chart" required></v-autocomplete>
                   </v-col>
                 </v-row>
               </v-container>
@@ -166,14 +166,11 @@
 
     <v-app class="box-output">
       <v-container>
-        <v-sheet :height="600" width="102%" color="blue-lighten-4" border rounded class="box-hasil">
+        <v-sheet :height="600" width="102%" border rounded class="box-hasil">
           <!-- <template v-if="visualObject && visualObject.length > 0">
             {{ visualObject }}
           </template> -->
-          <!-- <BarChartComponent /> -->
-          <!-- <ScatterPlotComponent /> -->
-          <!-- <PieChartComponent /> -->
-          <LineChartComponent />
+          <component :is="currentChartComponent" />
         </v-sheet>
       </v-container>
     </v-app>
@@ -182,16 +179,16 @@
 
 <script>
 import axios from 'axios';
-// import BarChartComponent from './BarChartComponent.vue';
-// import ScatterPlotComponent from './ScatterPlotComponent.vue';
-// import PieChartComponent from './PieChartComponent.vue';
+import BarChartComponent from './BarChartComponent.vue';
+import ScatterPlotComponent from './ScatterPlotComponent.vue';
+import PieChartComponent from './PieChartComponent.vue';
 import LineChartComponent from './LineChartComponent.vue';
 
 export default {
   components: {
-    // BarChartComponent,
-    // ScatterPlotComponent,
-    // PieChartComponent,
+    BarChartComponent,
+    ScatterPlotComponent,
+    PieChartComponent,
     LineChartComponent,
   },
 
@@ -208,13 +205,15 @@ export default {
       dataHeaders: [],
       dataContents: [],
       katalogData: [],
-      selectedColumns: [],
+      selectedColumns: null,
       selectedDescriptiveStats: [],
-      selectedCharts: [],
+      selectedCharts: null,
       summaryEntity: [],
       availableInfentialStats: ['Paired t-test', 'Unpaired t-test', 'One Way Anova', 'Wilcoxon Rank Test', 'Mann Whitney U-test', 'Kruskal Wallis Test'],
       idDataTerpilih: null,
       visualObject: [],
+      currentChartComponent: 'LineChartComponent',
+      chartComponents: ['BarChartComponent', 'ScatterPlotComponent', 'PieChartComponent', 'LineChartComponent']
     }
   },
   methods: {
@@ -225,7 +224,7 @@ export default {
       this.dialog3 = false;
       this.selectedColumns = [];
       this.selectedDescriptiveStats = [];
-      this.selectedCharts = [];
+      this.selectedCharts = null;
     },
     simpanDataDialog() {
       this.$emit('tableIdChanged', this.idDataTerpilih);
@@ -250,7 +249,7 @@ export default {
         });
         this.selectedColumns = [];
         this.selectedDescriptiveStats = [];
-        this.selectedCharts = [];
+        this.selectedCharts = null;
     },
     pilihDeskriptif() {
       this.dialog1 = false
@@ -298,20 +297,37 @@ export default {
         });
     },
     pilihVisualisasi() {
-      this.dialog1 = false
-      // Memeriksa apakah v-col sudah diisi
-      if (!this.selectedColumns || this.selectedColumns.length === 0) {
-        this.tampilkanAlert('Anda Belum Memilih Kolom');
-        return;
-      }
+      this.dialog3 = false
+      // // Memeriksa apakah v-col sudah diisi
+      // if (!this.selectedColumns || this.selectedColumns.length === 0) {
+      //   this.tampilkanAlert('Anda Belum Memilih Kolom');
+      //   return;
+      // }
 
-      // Memeriksa apakah v-autocomplete sudah diisi
-      if (!this.selectedCharts || this.selectedCharts.length === 0) {
-        this.tampilkanAlert('Anda Belum Memilih Visualisasi');
-        return;
+      // // Memeriksa apakah v-autocomplete sudah diisi
+      // if (!this.selectedCharts || this.selectedCharts.length === 0) {
+      //   this.tampilkanAlert('Anda Belum Memilih Visualisasi');
+      //   return;
+      // }
+      // this.selectedColumns = [];
+      // this.selectedCharts = [];
+
+      switch (this.selectedCharts) {
+        case 'Bar Chart':
+          this.currentChartComponent = 'BarChartComponent';
+          break;
+        case 'Pie Chart':
+          this.currentChartComponent = 'PieChartComponent';
+          break;
+        case 'Line Chart':
+          this.currentChartComponent = 'LineChartComponent';
+          break;
+        case 'Scatter Plot':
+          this.currentChartComponent = 'ScatterPlotComponent';
+          break;
+        default:
+          break;
       }
-      this.selectedColumns = [];
-      this.selectedCharts = [];
     },
     openDialog(dialogNumber) {
       // Buka dialog sesuai dengan nomor dialog yang diberikan
