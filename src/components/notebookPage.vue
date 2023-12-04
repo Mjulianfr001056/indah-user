@@ -10,7 +10,7 @@
             <v-card-title>Pilih Data</v-card-title>
             <v-divider></v-divider>
             <v-card-text style="height: 300px">
-              <v-container>
+              <v-container class="radio-button-list">
                 <v-radio-group v-model="idDataTerpilih">
                   <v-radio v-for="pilihan in katalogData" :key="pilihan.id" :label="pilihan.judul" :value="pilihan.id">
                   </v-radio>
@@ -42,7 +42,7 @@
               <span class="text-h5">Statistik Deskriptif</span>
             </v-card-title>
             <v-card-text>
-              <v-container>
+              <v-container class="radio-button-list">
                 <v-row required>
                   <v-col cols="12" sm="6" required>
                     <v-select v-model="selectedColumns" :items=headersArray label="Kolom" required multiple></v-select>
@@ -78,7 +78,7 @@
               <span class="text-h5">Pilih Uji Statistik Inferensia</span>
             </v-card-title>
             <v-card-text>
-              <v-container>
+              <v-container class="radio-button-list">
                 <v-radio-group v-model="selectedTest" column>
                   <v-radio v-for="test in availableInfentialStats" :key="test" :label="test" :value="test"></v-radio>
                 </v-radio-group>
@@ -102,7 +102,7 @@
               <span class="text-h5">Pilih Kolom</span>
             </v-card-title>
             <v-card-text>
-              <v-checkbox v-model="selectedColumns" :items=headersArray label="Kolom" required multiple></v-checkbox>
+              <v-checkbox class="checkbox-kolom" v-for="kolom in headersArray" :key="kolom" v-model="selectedColumns" :label="kolom" :value="kolom" required multiple></v-checkbox>
             </v-card-text>
             <v-card-actions class="justify-end">
               <v-btn color="blue-darken-1" variant="text" @click="tutupDialogInferensia">
@@ -129,9 +129,9 @@
               <span class="text-h5">Pilih Chart</span>
             </v-card-title>
             <v-card-text>
-              <v-container>
-                <v-radio-group v-model="selectedTest" column>
-                  <v-radio v-for="test in availableChart" :key="test" :label="test" :value="test"></v-radio>
+              <v-container class="radio-button-list">
+                <v-radio-group v-model="selectedCharts" column>
+                  <v-radio v-for="chart in availableChart" :key="chart" :label="chart" :value="chart"></v-radio>
                 </v-radio-group>
               </v-container>
             </v-card-text>
@@ -153,7 +153,7 @@
               <span class="text-h5">Pilih Kolom</span>
             </v-card-title>
             <v-card-text>
-              <v-checkbox v-model="selectedColumns" :items=headersArray label="Kolom" required multiple></v-checkbox>
+              <v-checkbox class="checkbox-kolom" v-for="kolom in headersArray" :key="kolom" v-model="selectedColumns" :label="kolom" :value="kolom" required multiple></v-checkbox>
             </v-card-text>
             <v-card-actions class="justify-end">
               <v-btn color="blue-darken-1" variant="text" @click="tutupDialogVisualisasi">
@@ -259,7 +259,7 @@ export default {
         'ngrok-skip-browser-warning': 'true'
       }
       this.tutupDialog();
-      axios.get(' https://3067-110-138-125-213.ngrok-free.app/api/v1/data/' + this.idDataTerpilih, { headers })
+      axios.get(' https://2d60-103-123-250-164.ngrok-free.app/api/v1/data/' + this.idDataTerpilih, { headers })
         .then(response => {
           this.headersArray = response.data.entity.headers;
 
@@ -276,7 +276,7 @@ export default {
         });
         this.selectedColumns = [];
         this.selectedDescriptiveStats = [];
-        this.selectedCharts = null;
+        this.selectedCharts = [];
     },
     pilihDeskriptif() {
       this.dialog1 = false
@@ -302,7 +302,7 @@ export default {
         descriptiveMethods: this.selectedDescriptiveStats
       }
 
-      axios.post(' https://3067-110-138-125-213.ngrok-free.app/api/v1/desc', descriptiveRequest)
+      axios.post(' https://2d60-103-123-250-164.ngrok-free.app/api/v1/data/', descriptiveRequest)
         .then(response => {
           const tmp = response.data.entity;
 
@@ -352,14 +352,8 @@ export default {
         this.tampilkanAlert('Anda Belum Memilih Kolom');
         return;
       }
-
-     // Memeriksa apakah v-autocomplete sudah diisi
-     if (!this.selectedCharts || this.selectedCharts.length === 0) {
-       this.tampilkanAlert('Anda Belum Memilih Visualisasi');
-       return;
-     }
-     this.selectedColumns = [];
-     this.selectedCharts = [];
+      this.selectedColumns = [];
+      this.selectedCharts = [];
 
       switch (this.selectedCharts) {
         case 'Bar Chart':
@@ -397,7 +391,7 @@ export default {
     },
     openDialogKolomVisualisasi() {
     // Pastikan telah memilih uji statistik sebelum membuka dialog kolom
-    if (!this.selectedTest || this.selectedTest.length === 0) {
+    if (!this.selectedCharts || this.selectedCharts.length === 0) {
         this.tampilkanAlert('Anda Belum Memilih Visualisasi');
         return;
       }
@@ -420,7 +414,7 @@ export default {
       columnNames: ['id', 'judul']
     }
 
-    axios.post(' https://3067-110-138-125-213.ngrok-free.app/api/v1/data', katalogDataRequest)
+    axios.post(' https://2d60-103-123-250-164.ngrok-free.app/api/v1/data/', katalogDataRequest)
       .then(response => {
         const parsedData = response.data.entity.map(jsonString => JSON.parse(jsonString));
         const sortedData = parsedData.sort((a, b) => {
@@ -449,6 +443,12 @@ export default {
 
 .analisis-deskriptif, .analisis-inferensia, .visualisasi-data {
   margin-left: 5%;
+}
+.checkbox-kolom{
+  max-height: 30px;
+}
+.radio-button-list{
+  padding: 0px;
 }
 
 .table {
