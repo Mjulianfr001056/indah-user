@@ -193,6 +193,17 @@
     <v-app class="box-output">
       <v-container>
         <v-sheet :height="max - content" width="102%" border rounded class="box-hasil">
+
+          <!-- Komponen Deskriptif -->
+          <template v-for="(component, index) in descriptiveComponent">
+            <component :key="index" :is="component" :passedDescriptive="descriptiveTobePassed"
+              v-if="descriptiveTobePassed" />
+          </template>
+
+          <!-- Komponen Inferensia -->
+          <component :is="inferenceComponent" :passedInference="inferenceTobePassed" v-if="inferenceTobePassed" />
+
+          <!-- Komponen Visualisasi -->
           <template v-for="(chartComponent, index) in visualComponents">
             <component :key="index" :is="chartComponent" :passedData="dataTobePassed" v-if="dataTobePassed" />
           </template>
@@ -208,6 +219,9 @@ import BarChartComponent from './BarChartComponent.vue';
 import ScatterPlotComponent from './ScatterPlotComponent.vue';
 import PieChartComponent from './PieChartComponent.vue';
 import LineChartComponent from './LineChartComponent.vue';
+import AnovaInferenceComponent from './AnovaInferenceComponent.vue';
+import SummaryDescriptiveComponent from './SummaryDescriptiveComponent.vue';
+import CorrelationDescriptiveComponent from './CorrelationDescriptiveComponent.vue';
 
 export default {
   components: {
@@ -215,6 +229,9 @@ export default {
     ScatterPlotComponent,
     PieChartComponent,
     LineChartComponent,
+    AnovaInferenceComponent,
+    SummaryDescriptiveComponent,
+    CorrelationDescriptiveComponent
   },
 
   data() {
@@ -241,7 +258,11 @@ export default {
       idDataTerpilih: null,
       visualComponents: [],
       chartComponents: ['BarChartComponent', 'ScatterPlotComponent', 'PieChartComponent', 'LineChartComponent'],
-      dataTobePassed: null
+      dataTobePassed: null,
+      descriptiveComponent: [],
+      inferenceComponent: null,
+      descriptiveTobePassed: null,
+      inferenceTobePassed: null,
     }
   },
   methods: {
@@ -260,7 +281,7 @@ export default {
         'ngrok-skip-browser-warning': 'true'
       }
       this.tutupDialog();
-      axios.get('https://fd0d-110-138-125-213.ngrok-free.app/api/v1/data/' + this.idDataTerpilih, { headers })
+      axios.get('https://9b13-110-138-125-213.ngrok-free.app/api/v1/data/' + this.idDataTerpilih, { headers })
         .then(response => {
           this.headersArray = response.data.entity.headers;
 
@@ -294,33 +315,24 @@ export default {
       }
 
 
-      const descriptiveRequest = {
+      this.descriptiveTobePassed = {
         'ngrok-skip-browser-warning': 'true',
         tableId: this.idDataTerpilih,
         columnNames: this.selectedColumns,
-        descriptiveMethods: this.selectedDescriptiveStats
       }
 
-      axios.post('https://fd0d-110-138-125-213.ngrok-free.app/api/v1/desc', descriptiveRequest)
-        .then(response => {
-          const tmp = response.data.entity;
-
-          Object.entries(tmp).forEach(([key, value]) => {
-            switch (key) {
-              case "Summary":
-                this.visualObject.push(JSON.parse(value));
-                break;
-              case "Correlation":
-                this.visualObject.push(value);
-                break;
-              default:
-                break;
-            }
-          });
-        })
-        .catch(error => {
-          console.error('Error fetching data:', error);
-        });
+      this.selectedDescriptiveStats.forEach((stat) => {
+        switch (stat) {
+          case "Summary":
+            this.descriptiveComponent.push("SummaryDescriptiveComponent");
+            break;
+          case "Correlation":
+            this.descriptiveComponent.push("CorrelationDescriptiveComponent");
+            break;
+          default:
+            break;
+        }
+      });
 
       this.selectedColumns = [];
       this.selectedDescriptiveStats = [];
@@ -343,6 +355,38 @@ export default {
         this.tampilkanAlert('Anda Belum Memilih Kolom');
         return;
       }
+
+      this.inferenceTobePassed = {
+        'ngrok-skip-browser-warning': 'true',
+        tableId: this.idDataTerpilih,
+        columnNames: this.selectedColumns,
+        inferenceMethod: this.selectedTest
+      }
+
+      switch (this.selectedTest) {
+        // case "Paired t-test":
+        //   this.inferenceComponent.push("PairedTTestComponent");
+        //   break;
+        // case "Unpaired t-test":
+        //   this.inferenceComponent.push("UnpairedTTestComponent");
+        //   break;
+        case "One Way Anova":
+          this.inferenceComponent = AnovaInferenceComponent
+          break;
+        // case "Wilcoxon Rank Test":
+        //   this.inferenceComponent.push("WilcoxonRankTestComponent");
+        //   break;
+        // case "Mann Whitney U-test":
+        //   this.inferenceComponent.push("MannWhitneyUtestComponent");
+        //   break;
+        // case "Kruskal Wallis Test":
+        //   this.inferenceComponent.push("KruskalWallisTestComponent");
+        //   break;
+        default:
+          break;
+      }
+
+
       this.selectedTest = [];
       this.selectedColumns = [];
       this.dialogKolomInferensia = false
@@ -362,7 +406,7 @@ export default {
         columnNames: this.selectedColumns
       }
 
-      axios.get('https://fd0d-110-138-125-213.ngrok-free.app/api/v1/data/' + this.idDataTerpilih, { headers })
+      axios.get('https://9b13-110-138-125-213.ngrok-free.app/api/v1/data/' + this.idDataTerpilih, { headers })
         .then(response => {
           const headers = response.data.entity.headers
 
@@ -415,7 +459,6 @@ export default {
       }
       this.dialog2 = false;
       this.dialogKolomInferensia = true;
-
     },
     openDialogKolomVisualisasi() {
       // Pastikan telah memilih uji statistik sebelum membuka dialog kolom
@@ -442,7 +485,7 @@ export default {
       columnNames: ['id', 'judul']
     }
 
-    axios.post('https://fd0d-110-138-125-213.ngrok-free.app/api/v1/data', katalogDataRequest)
+    axios.post('https://9b13-110-138-125-213.ngrok-free.app/api/v1/data', katalogDataRequest)
       .then(response => {
         const parsedData = response.data.entity.map(jsonString => JSON.parse(jsonString));
         const sortedData = parsedData.sort((a, b) => {
