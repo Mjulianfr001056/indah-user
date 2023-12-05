@@ -221,6 +221,7 @@ import PieChartComponent from './PieChartComponent.vue';
 import LineChartComponent from './LineChartComponent.vue';
 import AnovaInferenceComponent from './AnovaInferenceComponent.vue';
 import SummaryDescriptiveComponent from './SummaryDescriptiveComponent.vue';
+import CorrelationDescriptiveComponent from './CorrelationDescriptiveComponent.vue';
 
 export default {
   components: {
@@ -229,7 +230,8 @@ export default {
     PieChartComponent,
     LineChartComponent,
     AnovaInferenceComponent,
-    SummaryDescriptiveComponent
+    SummaryDescriptiveComponent,
+    CorrelationDescriptiveComponent
   },
 
   data() {
@@ -325,7 +327,7 @@ export default {
             this.descriptiveComponent.push("SummaryDescriptiveComponent");
             break;
           case "Correlation":
-            this.descriptiveComponent.push("CorrelationComponent");
+            this.descriptiveComponent.push("CorrelationDescriptiveComponent");
             break;
           default:
             break;
