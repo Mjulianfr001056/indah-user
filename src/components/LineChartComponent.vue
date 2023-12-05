@@ -1,5 +1,8 @@
 <template>
-    <Line :data="data" :options="options" />
+    <h2>Line Chart Output</h2>
+    <div style="max-height: 700px;">
+        <Line :data="data" :options="options" />
+    </div>
 </template>
   
 <script>
@@ -46,7 +49,7 @@ export default {
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: false
+                maintainAspectRatio: true
             }
         }
     },

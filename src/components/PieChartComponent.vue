@@ -1,5 +1,8 @@
 <template>
-    <Pie :data="data" :options="options" />
+    <h2>Pie Chart Output</h2>
+    <div style="max-height: 700px;">
+        <Pie :data="data" :options="options" />
+    </div>
 </template>
   
 <script>
@@ -25,7 +28,7 @@ export default {
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: false
+                maintainAspectRatio: true
             }
         }
     },

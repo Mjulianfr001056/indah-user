@@ -103,7 +103,8 @@
               <span class="text-h5">Pilih Kolom</span>
             </v-card-title>
             <v-card-text>
-              <v-checkbox class="checkbox-kolom" v-for="kolom in headersArray" :key="kolom" v-model="selectedColumns" :label="kolom" :value="kolom" required multiple></v-checkbox>
+              <v-checkbox class="checkbox-kolom" v-for="kolom in headersArray" :key="kolom" v-model="selectedColumns"
+                :label="kolom" :value="kolom" required multiple></v-checkbox>
             </v-card-text>
             <v-card-actions class="justify-end">
               <v-btn color="blue-darken-1" variant="text" @click="tutupDialogInferensia">
@@ -130,11 +131,8 @@
               <span class="text-h5">Pilih Chart</span>
             </v-card-title>
             <v-card-text>
-              <v-container class="radio-button-list">
-                <v-radio-group v-model="selectedCharts" column>
-                  <v-radio v-for="chart in availableChart" :key="chart" :label="chart" :value="chart"></v-radio>
-                </v-radio-group>
-              </v-container>
+              <v-checkbox v-model="selectedCharts" class="checkbox-kolom" v-for="chart in availableChart" :key="chart"
+                :label="chart" :value="chart"></v-checkbox>
             </v-card-text>
             <v-card-actions class="justify-end">
               <v-btn color="blue-darken-1" variant="text" @click="tutupDialogVisualisasi">
@@ -154,7 +152,8 @@
               <span class="text-h5">Pilih Kolom</span>
             </v-card-title>
             <v-card-text>
-              <v-checkbox class="checkbox-kolom" v-for="kolom in headersArray" :key="kolom" v-model="selectedColumns" :label="kolom" :value="kolom" required multiple></v-checkbox>
+              <v-checkbox class="checkbox-kolom" v-for="kolom in headersArray" :key="kolom" v-model="selectedColumns"
+                :label="kolom" :value="kolom" required multiple></v-checkbox>
             </v-card-text>
             <v-card-actions class="justify-end">
               <v-btn color="blue-darken-1" variant="text" @click="tutupDialogVisualisasi">
@@ -193,11 +192,10 @@
 
     <v-app class="box-output">
       <v-container>
-        <v-sheet :height="600" width="102%" border rounded class="box-hasil">
-          <!-- <template v-if="visualObject && visualObject.length > 0">
-            {{ visualObject }}
-          </template> -->
-          <component :is="currentChartComponent" />
+        <v-sheet :height="max - content" width="102%" border rounded class="box-hasil">
+          <template v-for="(chartComponent, index) in visualComponents">
+            <component :key="index" :is="chartComponent" :passedData="dataTobePassed" v-if="dataTobePassed" />
+          </template>
         </v-sheet>
       </v-container>
     </v-app>
@@ -241,9 +239,9 @@ export default {
       availableInfentialStats: ['Paired t-test', 'Unpaired t-test', 'One Way Anova', 'Wilcoxon Rank Test', 'Mann Whitney U-test', 'Kruskal Wallis Test'],
       availableChart: ['Bar Chart', 'Pie Chart', 'Line Chart', 'Scatter Plot'],
       idDataTerpilih: null,
-      visualObject: [],
-      currentChartComponent: 'LineChartComponent',
-      chartComponents: ['BarChartComponent', 'ScatterPlotComponent', 'PieChartComponent', 'LineChartComponent']
+      visualComponents: [],
+      chartComponents: ['BarChartComponent', 'ScatterPlotComponent', 'PieChartComponent', 'LineChartComponent'],
+      dataTobePassed: null
     }
   },
   methods: {
@@ -262,7 +260,7 @@ export default {
         'ngrok-skip-browser-warning': 'true'
       }
       this.tutupDialog();
-      axios.get('https://2d60-103-123-250-164.ngrok-free.app/api/v1/data/' + this.idDataTerpilih, { headers })
+      axios.get('https://fd0d-110-138-125-213.ngrok-free.app/api/v1/data/' + this.idDataTerpilih, { headers })
         .then(response => {
           this.headersArray = response.data.entity.headers;
 
@@ -277,9 +275,9 @@ export default {
         .catch(error => {
           console.error('Error fetching data:', error);
         });
-        this.selectedColumns = [];
-        this.selectedDescriptiveStats = [];
-        this.selectedCharts = [];
+      this.selectedColumns = [];
+      this.selectedDescriptiveStats = [];
+      this.selectedCharts = [];
     },
     pilihDeskriptif() {
       this.dialog1 = false
@@ -303,10 +301,10 @@ export default {
         descriptiveMethods: this.selectedDescriptiveStats
       }
 
-      axios.post('https://2d60-103-123-250-164.ngrok-free.app/api/v1/desc', descriptiveRequest)
+      axios.post('https://fd0d-110-138-125-213.ngrok-free.app/api/v1/desc', descriptiveRequest)
         .then(response => {
           const tmp = response.data.entity;
-          
+
           Object.entries(tmp).forEach(([key, value]) => {
             switch (key) {
               case "Summary":
@@ -356,25 +354,51 @@ export default {
         this.tampilkanAlert('Anda Belum Memilih Kolom');
         return;
       }
-      this.selectedColumns = [];
-      this.selectedCharts = [];
 
-      switch (this.selectedCharts) {
-        case 'Bar Chart':
-          this.currentChartComponent = 'BarChartComponent';
-          break;
-        case 'Pie Chart':
-          this.currentChartComponent = 'PieChartComponent';
-          break;
-        case 'Line Chart':
-          this.currentChartComponent = 'LineChartComponent';
-          break;
-        case 'Scatter Plot':
-          this.currentChartComponent = 'ScatterPlotComponent';
-          break;
-        default:
-          break;
+
+      const headers = {
+        'ngrok-skip-browser-warning': 'true',
+        tableName: this.idDataTerpilih,
+        columnNames: this.selectedColumns
       }
+
+      axios.get('https://fd0d-110-138-125-213.ngrok-free.app/api/v1/data/' + this.idDataTerpilih, { headers })
+        .then(response => {
+          const headers = response.data.entity.headers
+
+          const contents = response.data.entity.contents.map(jsonString => JSON.parse(jsonString));
+
+          this.dataTobePassed = {
+            headers: headers,
+            contents: contents
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+
+
+      this.visualComponents = [];
+
+      this.selectedCharts.forEach((chart) => {
+        switch (chart) {
+          case 'Bar Chart':
+            this.visualComponents.push("BarChartComponent");
+            break;
+          case 'Pie Chart':
+            this.visualComponents.push("PieChartComponent");
+            break;
+          case 'Line Chart':
+            this.visualComponents.push("LineChartComponent");
+            break;
+          case 'Scatter Plot':
+            this.visualComponents.push("ScatterPlotComponent");
+            break;
+          default:
+            break;
+        }
+      });
+
       this.selectedCharts = [];
       this.selectedColumns = [];
       this.dialogKolomVisualisasi = false;
@@ -394,8 +418,8 @@ export default {
 
     },
     openDialogKolomVisualisasi() {
-    // Pastikan telah memilih uji statistik sebelum membuka dialog kolom
-    if (!this.selectedCharts || this.selectedCharts.length === 0) {
+      // Pastikan telah memilih uji statistik sebelum membuka dialog kolom
+      if (!this.selectedCharts || this.selectedCharts.length === 0) {
         this.tampilkanAlert('Anda Belum Memilih Visualisasi');
         return;
       }
@@ -418,7 +442,7 @@ export default {
       columnNames: ['id', 'judul']
     }
 
-    axios.post('https://2d60-103-123-250-164.ngrok-free.app/api/v1/data', katalogDataRequest)
+    axios.post('https://fd0d-110-138-125-213.ngrok-free.app/api/v1/data', katalogDataRequest)
       .then(response => {
         const parsedData = response.data.entity.map(jsonString => JSON.parse(jsonString));
         const sortedData = parsedData.sort((a, b) => {
@@ -450,10 +474,12 @@ export default {
 .visualisasi-data {
   margin-left: 5%;
 }
-.checkbox-kolom{
+
+.checkbox-kolom {
   max-height: 30px;
 }
-.radio-button-list{
+
+.radio-button-list {
   padding: 0px;
 }
 
@@ -480,4 +506,5 @@ td {
 
 /* .box-output{
   margin-left: 2%;
-} */</style>
+} */
+</style>

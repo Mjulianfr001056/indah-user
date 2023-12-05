@@ -1,5 +1,6 @@
 <template>
-    <div>
+    <h2>Scatterplot Output</h2>
+    <div style="max-height: 700px;">
         <Scatter :data="data" :options="options" />
     </div>
 </template>

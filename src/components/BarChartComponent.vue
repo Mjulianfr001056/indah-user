@@ -1,76 +1,71 @@
 <template>
-    <Bar id="my-chart-id" :options="chartOptions" :data="chartData" />
+    <h2>Bar Chart Output</h2>
+    <div style="max-height: 700px;">
+        <Bar v-if="chartData" :data="chartData" :options="chartOptions" />
+    </div>
 </template>
   
 <script>
 import { Bar } from 'vue-chartjs'
 import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale } from 'chart.js'
-import axios from 'axios'
 
 ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
 
 export default {
     name: 'BarChart',
     components: { Bar },
+    props: {
+        passedData: {
+            type: Object,
+            required: true
+        }
+    },
     data() {
         return {
-            chartData: {
-                labels: ['January', 'February', 'March'],
-                datasets: [{ data: [40, 20, 12] }]
-            },
+            pastelColors: [
+                '#FFB3BA', '#FFDFBA', '#FFFFBA', '#BAFFC9', '#BAE1FF',
+                '#FFDAC1', '#E2F0CB', '#FFD3E0', '#FFB7C5', '#B5EAD7'
+            ],
+            chartData: null,
             chartOptions: {
-                responsive: true
+                responsive: true,
+                maintainAspectRatio: true,
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true,
+                            stepSize: 1
+                        }
+                    }]
+                }
             }
         }
     },
-    // methods: {
-    //     fetchData() {
-    //         const headers = {
-    //             'ngrok-skip-browser-warning': 'true',
-    //             tableName: 'data_sampel2',
-    //             columnNames: ['A', 'B', 'C']
-    //         }
-
-    //         axios.post('http://localhost:8080/api/v1/data', headers)
-    //             .then(response => {
-    //                 console.log(response.data.entity);
-    //             })
-    //             .catch(error => {
-    //                 console.log(error);
-    //             });
-    //     },
-    // },
     mounted() {
-        // this.fetchData()
-        const headers = {
-            'ngrok-skip-browser-warning': 'true',
-            tableName: 'data_sampel5',
-            columnNames: ['provinsi', 'semangka']
-        }
+        let result = {}
 
-        axios.post('http://localhost:8080/api/v1/data', headers)
-            .then(response => {
-                var parsedData = response.data.entity.map(jsonString => JSON.parse(jsonString));
-                var labels = parsedData.map(data => data.provinsi);
-                var data = parsedData.map(data => data.semangka);
+        this.passedData.contents.forEach(item => {
+            Object.keys(item).forEach(key => {
+                if (!result[key]) {
+                    result[key] = {
+                        label: key,
+                        data: []
+                    }
+                }
+                result[key].data.push(item[key]);
+            })
+        })
 
-                // Define an array of 5 colors
-                var colors = ['#FFB3BA', '#FFDFBA', '#FFFFBA', '#BAFFC9', '#BAE1FF'];
-
-                // Map the data to colors
-                var backgroundColors = data.map((_, i) => colors[i % colors.length]);
-
-                this.chartData = {
-                    labels: labels,
-                    datasets: [{
-                        data: data,
-                        backgroundColor: backgroundColors
-                    }]
+        this.chartData = {
+            labels: Array.from({ length: this.passedData.contents.length }, (_, i) => i + 1),
+            datasets: Object.keys(result).map((key, index) => {
+                return {
+                    label: result[key].label,
+                    data: result[key].data,
+                    backgroundColor: this.pastelColors[index % this.pastelColors.length],
                 }
             })
-            .catch(error => {
-                console.log(error);
-            });
+        }
     }
 }
 </script>
