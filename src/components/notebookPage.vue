@@ -152,8 +152,18 @@
               <span class="text-h5">Pilih Kolom</span>
             </v-card-title>
             <v-card-text>
-              <v-checkbox class="checkbox-kolom" v-for="kolom in headersArray" :key="kolom" v-model="selectedColumns"
-                :label="kolom" :value="kolom" required multiple></v-checkbox>
+              <!-- <v-checkbox class="checkbox-kolom" v-for="kolom in headersArray" :key="kolom" v-model="selectedColumns"
+                :label="kolom" :value="kolom" required multiple></v-checkbox> -->
+                <v-container class="radio-button-list">
+                <v-row required>
+                  <v-col cols="12" sm="6" required>
+                    <v-select v-model="selectedColumns" :items=filteredColumnsForSelect label="Label" required></v-select>
+                  </v-col>
+                  <v-col cols="12" sm="6" required>
+                    <v-autocomplete v-model="selectedColumns1" :items=filteredColumnsForAutocomplete label="Kolom" multiple required></v-autocomplete>
+                  </v-col>
+                </v-row>
+              </v-container>
             </v-card-text>
             <v-card-actions class="justify-end">
               <v-btn color="blue-darken-1" variant="text" @click="tutupDialogVisualisasi">
@@ -249,6 +259,7 @@ export default {
       dataContents: [],
       katalogData: [],
       selectedColumns: null,
+      selectedColumns1: [],
       selectedDescriptiveStats: [],
       selectedTest: [],
       selectedCharts: [],
@@ -265,6 +276,15 @@ export default {
       inferenceTobePassed: null,
     }
   },
+  computed: {
+  // Buat computed property untuk menyaring pilihan yang sama
+  filteredColumnsForSelect() {
+      return this.headersArray.filter(item => !this.selectedColumns1.includes(item));
+    },
+    filteredColumnsForAutocomplete() {
+      return this.headersArray.filter(item => !this.selectedColumns.includes(item));
+    },
+},
   methods: {
     tutupDialog() {
       this.tambahDataDialog = false;
