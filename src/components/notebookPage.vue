@@ -152,8 +152,6 @@
               <span class="text-h5">Pilih Kolom</span>
             </v-card-title>
             <v-card-text>
-              <!-- <v-checkbox class="checkbox-kolom" v-for="kolom in headersArray" :key="kolom" v-model="selectedColumns"
-                :label="kolom" :value="kolom" required multiple></v-checkbox> -->
               <v-container class="radio-button-list">
                 <v-row required>
                   <v-col cols="12" sm="6" required>
@@ -260,6 +258,8 @@ export default {
       dataContents: [],
       katalogData: [],
       selectedColumns: null,
+      // filteredColumnsForAutocomplete: [],
+      // filteredColumnsForSelect: [],
       labelColumn: [],
       selectedDescriptiveStats: [],
       selectedTest: [],
@@ -320,6 +320,7 @@ export default {
       this.selectedColumns = [];
       this.selectedDescriptiveStats = [];
       this.selectedCharts = [];
+      this.labelColumn = [];
     },
     pilihDeskriptif() {
       this.dialog1 = false
@@ -472,8 +473,9 @@ export default {
         }
       });
 
-      this.selectedCharts = [];
+      this.labelColumn = [];
       this.selectedColumns = [];
+      this.selectedCharts = [];
       this.dialogKolomVisualisasi = false;
     },
     openDialog(dialogNumber) {
