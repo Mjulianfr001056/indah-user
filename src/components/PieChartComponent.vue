@@ -1,76 +1,88 @@
 <template>
+  <div>
     <h2>Pie Chart Output</h2>
-    <div style="max-height: 700px;">
-        <Pie :data="data" :options="options" />
+    <div>
+      <label for="selectedColumn">Pilih Kolom Data:</label>
+      <select v-model="selectedColumn" @change="updateChartData">
+        <option v-for="column in availableColumns" :key="column">{{ column }}</option>
+      </select>
     </div>
+    <div style="max-height: 700px">
+      <Pie v-if="chartData" :data="chartData" :options="chartOptions" />
+    </div>
+  </div>
 </template>
-  
-<script>
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
-import { Pie } from 'vue-chartjs'
-import axios from 'axios'
 
-ChartJS.register(ArcElement, Tooltip, Legend)
+<script>
+import { Pie } from "vue-chartjs";
+import { Chart as ChartJS, Title, Tooltip, Legend, ArcElement, CategoryScale, LinearScale } from "chart.js";
+
+ChartJS.register(Title, Tooltip, Legend, ArcElement, CategoryScale, LinearScale);
 
 export default {
-    name: 'PieChartComponent',
-    props: {
-        passedData: {
-            type: Object,
-            required: true
-        }
-    },
-    components: {
-        Pie
-    },
-    data() {
-        return {
-            data: {
-                labels: ['VueJs', 'EmberJs', 'ReactJs', 'AngularJs'],
-                datasets: [
-                    {
-                        data: [40, 20, 80, 10]
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: true
-            }
-        }
-    },
-    mounted() {
-        const headers = {
-            'ngrok-skip-browser-warning': 'true',
-            tableName: 'data_sampel5',
-            columnNames: ['provinsi', 'durian']
-        }
-
-        axios.post('https://5117-180-243-17-120.ngrok-free.app/api/v1/data', headers)
-            .then(response => {
-                var parsedData = response.data.entity.map(jsonString => JSON.parse(jsonString));
-                var labels = parsedData.map(data => data.provinsi);
-                var data = parsedData.map(data => data.durian);
-
-                // Define an array of 5 pastel colors
-                var colors = ['#FFB3BA', '#FFDFBA', '#FFFFBA', '#BAFFC9', '#BAE1FF'];
-
-                // Map the data to colors
-                var backgroundColors = data.map((_, i) => colors[i % colors.length]);
-
-                this.data = {
-                    labels: labels,
-                    datasets: [
-                        {
-                            data: data,
-                            backgroundColor: backgroundColors
-                        }
-                    ]
-                }
-            })
-            .catch(error => {
-                console.log(error);
-            });
+  name: "PieChart",
+  components: { Pie },
+  props: {
+    passedData: {
+      type: Object,
+      required: true
     }
-}
+  },
+  data() {
+    return {
+      chartData: null,
+      chartOptions: {
+        responsive: true,
+        maintainAspectRatio: true,
+      },
+      Colors: ["#FFB3BA", "#FFDFBA", "#FFFFBA", "#BAFFC9", "#BAE1FF"],
+      availableColumns: [],
+      selectedColumn: null,
+      result: {}, // Define result object here
+    };
+  },
+  mounted() {
+    this.initializeChartData();
+  },
+  methods: {
+    initializeChartData() {
+      this.passedData.contents.forEach((item) => {
+        Object.keys(item).forEach((key) => {
+          if (!this.result[key]) {
+            this.result[key] = {
+              label: key,
+              total: 0,
+            };
+          }
+          this.result[key].total += item[key];
+        });
+      });
+
+      this.availableColumns = Object.keys(this.result);
+      this.selectedColumn = this.availableColumns[0]; // Set default selected column
+
+      this.updateChartData();
+    },
+    updateChartData() {
+      if (!this.selectedColumn) {
+        return;
+      }
+
+      const chartDataArray = Object.keys(this.result).map((key) => ({
+        label: this.result[key].label,
+        total: this.result[key].total,
+      }));
+
+      this.chartData = {
+        labels: chartDataArray.map((data) => data.label),
+        datasets: [
+          {
+            data: chartDataArray.map((data) => data.total),
+            backgroundColor: this.Colors.slice(0, chartDataArray.length),
+          },
+        ],
+      };
+    },
+  },
+};
 </script>
