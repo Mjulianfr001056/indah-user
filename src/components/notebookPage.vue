@@ -157,8 +157,7 @@
               <v-container class="radio-button-list">
                 <v-row required>
                   <v-col cols="12" sm="6" required>
-                    <v-select v-model="labelColumn" :items=filteredColumnsForSelect label="Label"
-                      required></v-select>
+                    <v-select v-model="labelColumn" :items=filteredColumnsForSelect label="Label" required></v-select>
                   </v-col>
                   <v-col cols="12" sm="6" required>
                     <v-autocomplete v-model="selectedColumns" :items=filteredColumnsForAutocomplete label="Kolom" multiple
@@ -423,7 +422,6 @@ export default {
 
       this.selectedColumns.push(this.labelColumn);
 
-
       const headers = {
         'ngrok-skip-browser-warning': 'true',
         tableId: this.idDataTerpilih,
@@ -434,12 +432,19 @@ export default {
         .then(response => {
           const contents = response.data.entity.map(jsonString => JSON.parse(jsonString));
           let label = contents.map(data => data[this.labelColumn]);
+          let filteredContents = contents.map(item => {
+            let newItem = { ...item };
+            delete newItem[this.labelColumn];
+            return newItem;
+          });
 
           this.dataTobePassed = {
             xLabel: label,
             headers: headers.columnNames,
-            contents: contents
+            contents: filteredContents
           }
+
+          console.log(this.dataTobePassed)
         })
         .catch(error => {
           console.log(error);
