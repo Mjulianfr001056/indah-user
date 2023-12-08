@@ -154,13 +154,15 @@
             <v-card-text>
               <!-- <v-checkbox class="checkbox-kolom" v-for="kolom in headersArray" :key="kolom" v-model="selectedColumns"
                 :label="kolom" :value="kolom" required multiple></v-checkbox> -->
-                <v-container class="radio-button-list">
+              <v-container class="radio-button-list">
                 <v-row required>
                   <v-col cols="12" sm="6" required>
-                    <v-select v-model="selectedColumns" :items=filteredColumnsForSelect label="Label" required></v-select>
+                    <v-select v-model="labelColumn" :items=filteredColumnsForSelect label="Label"
+                      required></v-select>
                   </v-col>
                   <v-col cols="12" sm="6" required>
-                    <v-autocomplete v-model="selectedColumns1" :items=filteredColumnsForAutocomplete label="Kolom" multiple required></v-autocomplete>
+                    <v-autocomplete v-model="selectedColumns" :items=filteredColumnsForAutocomplete label="Kolom" multiple
+                      required></v-autocomplete>
                   </v-col>
                 </v-row>
               </v-container>
@@ -259,7 +261,7 @@ export default {
       dataContents: [],
       katalogData: [],
       selectedColumns: null,
-      selectedColumns1: [],
+      labelColumn: [],
       selectedDescriptiveStats: [],
       selectedTest: [],
       selectedCharts: [],
@@ -277,14 +279,14 @@ export default {
     }
   },
   computed: {
-  // Buat computed property untuk menyaring pilihan yang sama
-  filteredColumnsForSelect() {
-      return this.headersArray.filter(item => !this.selectedColumns1.includes(item));
-    },
-    filteredColumnsForAutocomplete() {
+    // Buat computed property untuk menyaring pilihan yang sama
+    filteredColumnsForSelect() {
       return this.headersArray.filter(item => !this.selectedColumns.includes(item));
     },
-},
+    filteredColumnsForAutocomplete() {
+      return this.headersArray.filter(item => !this.labelColumn.includes(item));
+    },
+  },
   methods: {
     tutupDialog() {
       this.tambahDataDialog = false;
@@ -419,6 +421,8 @@ export default {
         return;
       }
 
+      this.selectedColumns.push(this.labelColumn);
+
 
       const headers = {
         'ngrok-skip-browser-warning': 'true',
@@ -429,8 +433,10 @@ export default {
       axios.post('https://5117-180-243-17-120.ngrok-free.app/api/v1/data/', headers)
         .then(response => {
           const contents = response.data.entity.map(jsonString => JSON.parse(jsonString));
+          let label = contents.map(data => data[this.labelColumn]);
 
           this.dataTobePassed = {
+            xLabel: label,
             headers: headers.columnNames,
             contents: contents
           }

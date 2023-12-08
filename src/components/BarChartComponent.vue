@@ -1,5 +1,7 @@
 <template>
-    <h2>Bar Chart Output</h2>
+    <div class="judul">
+        <h2>Bar Chart Output</h2>
+    </div>
     <div style="max-height: 700px;">
         <Bar v-if="chartData" :data="chartData" :options="chartOptions" />
     </div>
@@ -58,7 +60,7 @@ export default {
         })
 
         this.chartData = {
-            labels: Array.from({ length: this.passedData.contents.length }, (_, i) => i + 1),
+            labels: this.passedData.xLabel,
             datasets: Object.keys(result).map((key, index) => {
                 return {
                     label: result[key].label,
@@ -70,3 +72,14 @@ export default {
     }
 }
 </script>
+
+<style scoped>
+.judul {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    margin-bottom: 20px;
+    margin-top: 20px;
+}
+</style>
