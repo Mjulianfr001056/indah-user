@@ -281,7 +281,7 @@ export default {
         'ngrok-skip-browser-warning': 'true'
       }
       this.tutupDialog();
-      axios.get('https://9b13-110-138-125-213.ngrok-free.app/api/v1/data/' + this.idDataTerpilih, { headers })
+      axios.get('https://5117-180-243-17-120.ngrok-free.app/api/v1/data/' + this.idDataTerpilih, { headers })
         .then(response => {
           this.headersArray = response.data.entity.headers;
 
@@ -402,18 +402,16 @@ export default {
 
       const headers = {
         'ngrok-skip-browser-warning': 'true',
-        tableName: this.idDataTerpilih,
+        tableId: this.idDataTerpilih,
         columnNames: this.selectedColumns
       }
 
-      axios.get('https://9b13-110-138-125-213.ngrok-free.app/api/v1/data/' + this.idDataTerpilih, { headers })
+      axios.post('https://5117-180-243-17-120.ngrok-free.app/api/v1/data/', headers)
         .then(response => {
-          const headers = response.data.entity.headers
-
-          const contents = response.data.entity.contents.map(jsonString => JSON.parse(jsonString));
+          const contents = response.data.entity.map(jsonString => JSON.parse(jsonString));
 
           this.dataTobePassed = {
-            headers: headers,
+            headers: headers.columnNames,
             contents: contents
           }
         })
@@ -480,12 +478,10 @@ export default {
   },
   mounted() {
     const katalogDataRequest = {
-      'ngrok-skip-browser-warning': 'true',
-      tableName: 'katalog_data',
-      columnNames: ['id', 'judul']
+      'ngrok-skip-browser-warning': 'true'
     }
 
-    axios.post('https://9b13-110-138-125-213.ngrok-free.app/api/v1/data', katalogDataRequest)
+    axios.post('https://5117-180-243-17-120.ngrok-free.app/api/v1/data/katalog', katalogDataRequest)
       .then(response => {
         const parsedData = response.data.entity.map(jsonString => JSON.parse(jsonString));
         const sortedData = parsedData.sort((a, b) => {

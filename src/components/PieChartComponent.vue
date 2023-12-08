@@ -13,6 +13,13 @@ import axios from 'axios'
 ChartJS.register(ArcElement, Tooltip, Legend)
 
 export default {
+    name: 'PieChartComponent',
+    props: {
+        passedData: {
+            type: Object,
+            required: true
+        }
+    },
     components: {
         Pie
     },
@@ -39,7 +46,7 @@ export default {
             columnNames: ['provinsi', 'durian']
         }
 
-        axios.post('http://localhost:8080/api/v1/data', headers)
+        axios.post('https://5117-180-243-17-120.ngrok-free.app/api/v1/data', headers)
             .then(response => {
                 var parsedData = response.data.entity.map(jsonString => JSON.parse(jsonString));
                 var labels = parsedData.map(data => data.provinsi);

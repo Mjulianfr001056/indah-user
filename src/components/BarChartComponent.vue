@@ -42,6 +42,7 @@ export default {
         }
     },
     mounted() {
+        console.log(this.passedData)
         let result = {}
 
         this.passedData.contents.forEach(item => {
