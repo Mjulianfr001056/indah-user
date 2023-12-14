@@ -196,7 +196,7 @@
       <v-sheet class="ma-2 pa-2 me-auto">
         <p>Hasil</p>
       </v-sheet>
-      <v-sheet class="ma-2 pa-2"><v-btn color="#43A047">
+      <v-sheet class="ma-2 pa-2"><v-btn color="#43A047" @click = "downloadAsPDF()">
           Unduh
         </v-btn></v-sheet>
     </v-sheet>
@@ -233,6 +233,8 @@ import LineChartComponent from './LineChartComponent.vue';
 import AnovaInferenceComponent from './AnovaInferenceComponent.vue';
 import SummaryDescriptiveComponent from './SummaryDescriptiveComponent.vue';
 import CorrelationDescriptiveComponent from './CorrelationDescriptiveComponent.vue';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 export default {
   components: {
@@ -287,6 +289,22 @@ export default {
     },
   },
   methods: {
+    downloadAsPDF() {
+      const elementToCapture = document.querySelector('.box-output'); 
+      html2canvas(elementToCapture).then(canvas => {
+        const imgData = canvas.toDataURL('image/png');
+
+        // Use jsPDF to create a PDF document
+        const pdf = new jsPDF('landscape');
+        const imgWidth = pdf.internal.pageSize.getWidth();
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+        pdf.addImage(imgData, 'PNG', 10, 10, imgWidth - 20, imgHeight - 20);
+
+        // Download the PDF
+        pdf.save('visualization.pdf');
+      });
+    },
     tutupDialog() {
       this.tambahDataDialog = false;
       this.dialog1 = false;
@@ -302,7 +320,7 @@ export default {
         'ngrok-skip-browser-warning': 'true'
       }
       this.tutupDialog();
-      axios.get('https://5117-180-243-17-120.ngrok-free.app/api/v1/data/' + this.idDataTerpilih, { headers })
+      axios.get('https://ac1d-36-69-218-93.ngrok-free.app/api/v1/data/' + this.idDataTerpilih, { headers })
         .then(response => {
           this.headersArray = response.data.entity.headers;
 
@@ -428,7 +446,7 @@ export default {
         columnNames: this.selectedColumns
       }
 
-      axios.post('https://5117-180-243-17-120.ngrok-free.app/api/v1/data/', headers)
+      axios.post('https://ac1d-36-69-218-93.ngrok-free.app/api/v1/data/', headers)
         .then(response => {
           const contents = response.data.entity.map(jsonString => JSON.parse(jsonString));
           let label = contents.map(data => data[this.labelColumn]);
@@ -508,11 +526,13 @@ export default {
     },
   },
   mounted() {
+    
     const katalogDataRequest = {
       'ngrok-skip-browser-warning': 'true'
     }
+    
 
-    axios.post('https://5117-180-243-17-120.ngrok-free.app/api/v1/data/katalog', katalogDataRequest)
+    axios.post('https://ac1d-36-69-218-93.ngrok-free.app/api/v1/data/katalog', katalogDataRequest)
       .then(response => {
         const parsedData = response.data.entity.map(jsonString => JSON.parse(jsonString));
         const sortedData = parsedData.sort((a, b) => {
