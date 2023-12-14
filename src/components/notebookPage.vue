@@ -302,7 +302,7 @@ export default {
         'ngrok-skip-browser-warning': 'true'
       }
       this.tutupDialog();
-      axios.get('https://5117-180-243-17-120.ngrok-free.app/api/v1/data/' + this.idDataTerpilih, { headers })
+      axios.get('https://ac1d-36-69-218-93.ngrok-free.app/api/v1/data/' + this.idDataTerpilih, { headers })
         .then(response => {
           this.headersArray = response.data.entity.headers;
 
@@ -428,7 +428,7 @@ export default {
         columnNames: this.selectedColumns
       }
 
-      axios.post('https://5117-180-243-17-120.ngrok-free.app/api/v1/data/', headers)
+      axios.post('https://ac1d-36-69-218-93.ngrok-free.app/api/v1/data/', headers)
         .then(response => {
           const contents = response.data.entity.map(jsonString => JSON.parse(jsonString));
           let label = contents.map(data => data[this.labelColumn]);
@@ -459,6 +459,7 @@ export default {
             this.visualComponents.push("BarChartComponent");
             break;
           case 'Pie Chart':
+            console.log(this.selectedColumns)
             this.visualComponents.push("PieChartComponent");
             break;
           case 'Line Chart':
@@ -512,7 +513,7 @@ export default {
       'ngrok-skip-browser-warning': 'true'
     }
 
-    axios.post('https://5117-180-243-17-120.ngrok-free.app/api/v1/data/katalog', katalogDataRequest)
+    axios.post('https://ac1d-36-69-218-93.ngrok-free.app/api/v1/data/katalog', katalogDataRequest)
       .then(response => {
         const parsedData = response.data.entity.map(jsonString => JSON.parse(jsonString));
         const sortedData = parsedData.sort((a, b) => {
