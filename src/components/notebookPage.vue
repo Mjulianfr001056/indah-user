@@ -194,7 +194,7 @@
       <v-sheet class="ma-2 pa-2 me-auto">
         <p>Hasil</p>
       </v-sheet>
-      <v-sheet class="ma-2 pa-2"><v-btn color="#43A047">
+      <v-sheet class="ma-2 pa-2"><v-btn color="#43A047" @click = "downloadAsPDF()">
           Unduh
         </v-btn></v-sheet>
     </v-sheet>
@@ -231,6 +231,8 @@ import LineChartComponent from './LineChartComponent.vue';
 import AnovaInferenceComponent from './AnovaInferenceComponent.vue';
 import SummaryDescriptiveComponent from './SummaryDescriptiveComponent.vue';
 import CorrelationDescriptiveComponent from './CorrelationDescriptiveComponent.vue';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 export default {
   components: {
@@ -507,6 +509,22 @@ export default {
     tampilkanAlert(pesan) {
       // Metode untuk menampilkan alert
       alert(pesan);
+    },
+    downloadAsPDF() {
+      const elementToCapture = document.querySelector('.box-output'); 
+      html2canvas(elementToCapture).then(canvas => {
+        const imgData = canvas.toDataURL('image/png');
+
+        // Use jsPDF to create a PDF document
+        const pdf = new jsPDF('landscape');
+        const imgWidth = pdf.internal.pageSize.getWidth();
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+        pdf.addImage(imgData, 'PNG', 10, 10, imgWidth - 20, imgHeight - 20);
+
+        // Download the PDF
+        pdf.save('visualization.pdf');
+      });
     },
   },
   mounted() {
