@@ -1,56 +1,41 @@
 <template>
     <h2>Scatterplot Output</h2>
     <div style="max-height: 700px;">
-        <Scatter :data="data" :options="options" />
+        <Scatter :data="plotData" :options="plotOptions" />
     </div>
 </template>
 
 <script>
 import { Scatter } from 'vue-chartjs'
 import { Chart as ChartJS, LinearScale, PointElement, LineElement, Tooltip, Legend } from 'chart.js'
-import axios from 'axios'
 
 ChartJS.register(LinearScale, PointElement, LineElement, Tooltip, Legend)
 
 export default {
     name: 'App',
-    components: {
-        Scatter
+    components: { Scatter },
+    props: {
+        passedData: {
+            type: Object,
+            required: true
+        }
     },
     data() {
         return {
-            data: {
+            pastelColors: [
+                '#FFB3BA', '#FFDFBA', '#FFFFBA', '#BAFFC9', '#BAE1FF',
+                '#FFDAC1', '#E2F0CB', '#FFD3E0', '#FFB7C5', '#B5EAD7'
+            ],
+            plotData: {
                 datasets: [{
-                    label: 'Scatter Dataset 1',
+                    label: 'Scatter Dataset',
                     fill: false,
                     borderColor: '#f87979',
                     backgroundColor: '#f87979',
-                    data: [{
-                        x: -1,
-                        y: 0
-                    }, {
-                        x: 0,
-                        y: 1
-                    }, {
-                        x: 1,
-                        y: 3
-                    }, {
-                        x: 2,
-                        y: 2
-                    }, {
-                        x: 3,
-                        y: 3
-                    }, {
-                        x: 4,
-                        y: 1
-                    }, {
-                        x: 5,
-                        y: 2
-                    }
-                    ]
+                    data: []
                 }]
             },
-            options: {
+            plotOptions: {
                 scales: {
                     x: {
                         type: 'linear',
@@ -61,29 +46,33 @@ export default {
         }
     },
     mounted() {
-        const headers = {
-            'ngrok-skip-browser-warning': 'true',
-            tableName: 'data_sampel2',
-            columnNames: ['A', 'B']
-        }
+        console.log(this.passedData)
+        let result = {}
 
-        axios.post('http://localhost:8080/api/v1/data', headers)
-            .then(response => {
-                var parsedData = response.data.entity.map(jsonString => JSON.parse(jsonString));
-                var mappedData = parsedData.map(data => ({ x: data.A, y: data.B }));
-                this.data = {
-                    datasets: [{
-                        label: 'Scatter Dataset 1',
-                        fill: false,
-                        borderColor: '#f87979',
-                        backgroundColor: '#f87979',
-                        data: mappedData
-                    }]
+        this.passedData.contents.forEach(item => {
+            Object.keys(item).forEach(key => {
+                if (!result[key]) {
+                    result[key] = {
+                        label: key,
+                        data: []
+                    }
                 }
+                result[key].data.push(item[key]);
             })
-            .catch(error => {
-                console.log(error);
-            });
+        })
+
+        // Menyimpan nilai dari kunci "a" dan "b"
+        const keyA = Object.keys(result)[0];
+        const keyB = Object.keys(result)[1];
+
+        this.plotData = {
+            labels: this.passedData.xLabel,
+            datasets: [{
+                label: '${keyA} vs ${keyB}',
+                data: result[keyA].data.map((value, index) => ({ x: value, y: result[keyB].data[index] })),
+                backgroundColor: this.pastelColors[0], // Menggunakan warna pertama dari pastelColors
+            }]
+        }
     }
 } 
 </script>

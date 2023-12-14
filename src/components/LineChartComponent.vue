@@ -1,84 +1,112 @@
 <template>
+  <div>
     <h2>Line Chart Output</h2>
     <div style="max-height: 700px;">
-        <Line :data="data" :options="options" />
+      <Line v-if="chartData" :data="chartData" :options="chartOptions" />
     </div>
+  </div>
 </template>
-  
-<script>
-import {
-    Chart as ChartJS,
-    CategoryScale,
-    LinearScale,
-    PointElement,
-    LineElement,
-    Title,
-    Tooltip,
-    Legend
-} from 'chart.js'
-import { Line } from 'vue-chartjs'
 
-import axios from 'axios'
+<script>
+import { Line } from 'vue-chartjs';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+} from 'chart.js';
 
 ChartJS.register(
-    CategoryScale,
-    LinearScale,
-    PointElement,
-    LineElement,
-    Title,
-    Tooltip,
-    Legend
-)
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 export default {
-    name: 'App',
-    components: {
-        Line
+  name: 'LineChart',
+  components: { Line },
+  props: {
+    passedData: {
+      type: Object,
+      required: true,
     },
-    data() {
-        return {
-            data: {
-                labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-                datasets: [
-                    {
-                        label: 'Data One',
-                        backgroundColor: '#f87979',
-                        data: [40, 39, 10, 40, 39, 80, 40]
-                    }
-                ]
+  },
+  data() {
+    return {
+      pastelColors: [
+        '#FFB3BA',
+        '#FFDFBA',
+        '#FFFFBA',
+        '#BAFFC9',
+        '#BAE1FF',
+        '#FFDAC1',
+        '#E2F0CB',
+        '#FFD3E0',
+        '#FFB7C5',
+        '#B5EAD7',
+      ],
+      chartData: null,
+      chartOptions: {
+        responsive: true,
+        maintainAspectRatio: true,
+        scales: {
+          y: {
+            beginAtZero: true,
+            stepSize: 1,
+          },
+          x: {
+            ticks: {
+              callback: (value, index) =>
+                this.chartData.labels[index] || '', // Avoid undefined labels
             },
-            options: {
-                responsive: true,
-                maintainAspectRatio: true
-            }
-        }
-    },
-    mounted() {
-        const headers = {
-            'ngrok-skip-browser-warning': 'true',
-            tableName: 'data_sampel5',
-            columnNames: ['provinsi', 'semangka']
-        }
+          },
+        },
+      },
+    };
+  },
+  mounted() {
+    console.log(this.passedData)
+    this.transformData();
+  },
+  methods: {
+  transformData() {
+    const labels = []; // Menyimpan nama line berdasarkan isi kolom pertama
+    const datasets = [];
 
-        axios.post('http://localhost:8080/api/v1/data', headers)
-            .then(response => {
-                var parsedData = response.data.entity.map(jsonString => JSON.parse(jsonString));
-                var labels = parsedData.map(data => data.provinsi);
-                var data = parsedData.map(data => data.semangka);
-                this.data = {
-                    labels: labels,
-                    datasets: [
-                        {
-                            label: 'Data One',
-                            backgroundColor: '#f87979',
-                            data: data
-                        }
-                    ]
-                }
-            })
-            .catch(error => {
-                console.log(error);
-            });
-    }
-}
+    this.passedData.contents.forEach((item) => {
+      const dataPoints = [];
+
+      // Mengisi array dataPoints dengan data dari setiap kolom (kecuali kolom pertama)
+      Object.keys(item).forEach((key, index) => {
+        if (index === 0) {
+          labels.push(item[key]); // Menambahkan isi kolom pertama sebagai nama line
+        } else {
+          dataPoints.push(item[key]);
+        }
+      });
+
+      datasets.push({
+        data: dataPoints,
+        backgroundColor: this.pastelColors[datasets.length % this.pastelColors.length],
+      });
+    });
+
+    this.chartData = {
+      labels: labels,
+      datasets: datasets,
+    };
+  }
+},
+  
+
+
+};
 </script>
