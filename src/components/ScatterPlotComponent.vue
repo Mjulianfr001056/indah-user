@@ -68,7 +68,7 @@ export default {
         this.plotData = {
             labels: this.passedData.xLabel,
             datasets: [{
-                label: '${keyA} vs ${keyB}',
+                label: `${keyA} vs ${keyB}`,
                 data: result[keyA].data.map((value, index) => ({ x: value, y: result[keyB].data[index] })),
                 backgroundColor: this.pastelColors[0], // Menggunakan warna pertama dari pastelColors
             }]
