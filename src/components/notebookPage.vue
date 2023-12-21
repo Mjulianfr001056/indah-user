@@ -152,8 +152,6 @@
               <span class="text-h5">Pilih Kolom</span>
             </v-card-title>
             <v-card-text>
-              <!-- <v-checkbox class="checkbox-kolom" v-for="kolom in headersArray" :key="kolom" v-model="selectedColumns"
-                :label="kolom" :value="kolom" required multiple></v-checkbox> -->
               <v-container class="radio-button-list">
                 <v-row required>
                   <v-col cols="12" sm="6" required>
@@ -196,6 +194,7 @@
       <v-sheet class="ma-2 pa-2 me-auto">
         <p>Hasil</p>
       </v-sheet>
+      <v-sheet class="ma-2 pa-2"><v-btn color="#43A047" @click = "downloadAsPDF()">
       <v-sheet class="ma-2 pa-2"><v-btn color="#43A047" @click = "downloadAsPDF()">
           Unduh
         </v-btn></v-sheet>
@@ -263,6 +262,8 @@ export default {
       dataContents: [],
       katalogData: [],
       selectedColumns: null,
+      // filteredColumnsForAutocomplete: [],
+      // filteredColumnsForSelect: [],
       labelColumn: [],
       selectedDescriptiveStats: [],
       selectedTest: [],
@@ -339,6 +340,7 @@ export default {
       this.selectedColumns = [];
       this.selectedDescriptiveStats = [];
       this.selectedCharts = [];
+      this.labelColumn = [];
     },
     pilihDeskriptif() {
       this.dialog1 = false
@@ -492,8 +494,9 @@ export default {
         }
       });
 
-      this.selectedCharts = [];
+      this.labelColumn = [];
       this.selectedColumns = [];
+      this.selectedCharts = [];
       this.dialogKolomVisualisasi = false;
     },
     openDialog(dialogNumber) {
@@ -525,6 +528,22 @@ export default {
     tampilkanAlert(pesan) {
       // Metode untuk menampilkan alert
       alert(pesan);
+    },
+    downloadAsPDF() {
+      const elementToCapture = document.querySelector('.box-output'); 
+      html2canvas(elementToCapture).then(canvas => {
+        const imgData = canvas.toDataURL('image/png');
+
+        // Use jsPDF to create a PDF document
+        const pdf = new jsPDF('landscape');
+        const imgWidth = pdf.internal.pageSize.getWidth();
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+        pdf.addImage(imgData, 'PNG', 10, 10, imgWidth - 20, imgHeight - 20);
+
+        // Download the PDF
+        pdf.save('visualization.pdf');
+      });
     },
   },
   mounted() {
