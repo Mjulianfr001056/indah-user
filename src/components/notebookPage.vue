@@ -478,6 +478,7 @@ export default {
             this.visualComponents.push("BarChartComponent");
             break;
           case 'Pie Chart':
+            console.log(this.selectedColumns)
             this.visualComponents.push("PieChartComponent");
             break;
           case 'Line Chart':
