@@ -41,7 +41,7 @@ export default {
         tableId: this.tableId,
       };
 
-      axios.post('https://3067-110-138-125-213.ngrok-free.app/api/v1/data/ket', headers)
+      axios.post('localhost:8080/api/v1/data/ket', headers)
         .then(response => {
           this.tableContents = response.data.entity.map(jsonString => JSON.parse(jsonString));
           console.log(this.tableContents);

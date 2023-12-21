@@ -24,6 +24,8 @@
 
 <script>
 import axios from 'axios';
+import { API_ENDPOINT } from '@/others/config';
+
 export default {
     name: 'CorrelationDescriptiveComponent',
     props: {
@@ -41,7 +43,7 @@ export default {
     mounted() {
         const header = this.passedDescriptive
 
-        axios.post('https://9b13-110-138-125-213.ngrok-free.app/api/v1/desc/correlation', header)
+        axios.post(API_ENDPOINT + '/desc/correlation', header)
             .then(response => {
                 const matrixString = response.data.entity;
                 let matrix = matrixString.split('\n').map(

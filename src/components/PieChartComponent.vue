@@ -46,7 +46,7 @@ export default {
             columnNames: ['provinsi', 'durian']
         }
 
-        axios.post('https://5117-180-243-17-120.ngrok-free.app/api/v1/data', headers)
+        axios.post('localhost:8080/api/v1/data', headers)
             .then(response => {
                 var parsedData = response.data.entity.map(jsonString => JSON.parse(jsonString));
                 var labels = parsedData.map(data => data.provinsi);

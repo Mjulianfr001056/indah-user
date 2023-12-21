@@ -53,7 +53,7 @@ export default {
     mounted() {
         const header = this.passedDescriptive
 
-        axios.post('https://9b13-110-138-125-213.ngrok-free.app/api/v1/desc/summary', header)
+        axios.post('localhost:8080/api/v1/desc/summary', header)
             .then(response => {
                 const parsedResponse = response.data.entity.map(element => JSON.parse(element));
 

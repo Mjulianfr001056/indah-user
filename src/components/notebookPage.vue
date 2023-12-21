@@ -225,6 +225,7 @@
 </template>
 
 <script>
+import { API_ENDPOINT } from '@/others/config';
 import axios from 'axios';
 import BarChartComponent from './BarChartComponent.vue';
 import ScatterPlotComponent from './ScatterPlotComponent.vue';
@@ -320,7 +321,7 @@ export default {
         'ngrok-skip-browser-warning': 'true'
       }
       this.tutupDialog();
-      axios.get('https://ac1d-36-69-218-93.ngrok-free.app/api/v1/data/' + this.idDataTerpilih, { headers })
+      axios.get(API_ENDPOINT + 'data/' + this.idDataTerpilih, { headers })
         .then(response => {
           this.headersArray = response.data.entity.headers;
 
@@ -446,7 +447,7 @@ export default {
         columnNames: this.selectedColumns
       }
 
-      axios.post('https://ac1d-36-69-218-93.ngrok-free.app/api/v1/data/', headers)
+      axios.post(API_ENDPOINT + 'data/', headers)
         .then(response => {
           const contents = response.data.entity.map(jsonString => JSON.parse(jsonString));
           let label = contents.map(data => data[this.labelColumn]);
@@ -532,7 +533,7 @@ export default {
     }
     
 
-    axios.post('https://ac1d-36-69-218-93.ngrok-free.app/api/v1/data/katalog', katalogDataRequest)
+    axios.post(API_ENDPOINT + 'data/katalog', katalogDataRequest)
       .then(response => {
         const parsedData = response.data.entity.map(jsonString => JSON.parse(jsonString));
         const sortedData = parsedData.sort((a, b) => {
