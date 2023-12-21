@@ -1,76 +1,76 @@
 <template>
-    <h2>Pie Chart Output</h2>
-    <div style="max-height: 700px;">
-        <Pie :data="data" :options="options" />
+  <div class="h-auto w-auto overflow-x-auto">
+    <h2 class="mt-4 mb-3 text-center">Pie Chart Output</h2>
+    <v-divider class="mb-3 ml-2 mr-2" :thickness="3" />
+    <div class="d-flex flex-column h-screen w-auto mb-10" v-for="(data, index) in chartData" :key="index">
+      <div class="d-flex justify-center mb-2">
+        <h3 class="mr-1">Kolom:</h3>
+        <h3 class="text-center h-auto" v-for="(key, value) in passedData.headers[index]" :key="value">{{ key }}</h3>
+      </div>
+      <Pie v-if="data" :data="data" :options="chartOptions" />
     </div>
+  </div>
 </template>
-  
-<script>
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
-import { Pie } from 'vue-chartjs'
-import axios from 'axios'
 
-ChartJS.register(ArcElement, Tooltip, Legend)
+<script>
+import { Pie } from "vue-chartjs";
+import { Chart as ChartJS, Title, Tooltip, Legend, ArcElement, CategoryScale, LinearScale } from "chart.js";
+
+ChartJS.register(Title, Tooltip, Legend, ArcElement, CategoryScale, LinearScale);
 
 export default {
-    name: 'PieChartComponent',
-    props: {
-        passedData: {
-            type: Object,
-            required: true
-        }
+  name: "PieChart",
+  components: { Pie },
+  props: {
+    passedData: {
+      type: Object,
+      required: true,
     },
-    components: {
-        Pie
-    },
-    data() {
-        return {
-            data: {
-                labels: ['VueJs', 'EmberJs', 'ReactJs', 'AngularJs'],
-                datasets: [
-                    {
-                        data: [40, 20, 80, 10]
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: true
-            }
+  },
+  data() {
+    return {
+      chartData: null,
+      chartOptions: {
+        borderWidth: 1,
+        responsive: true,
+        maintainAspectRatio: false,
+      },
+
+      // pastel color
+      //   colors: ["#FFB3BA", "#FFDFBA", "#FFFFBA", "#BAFFC9", "#BAE1FF"],
+
+      colors: ["#B191BD", "#6E87B2", "#B7C0DF", "#7E878F", "#A9908A", "#7BB0DB", "#9AEAEF", "#F97645", "#C84557", "#D5BA99", "#BAD252", "#99424F", "#F1617D", "#2F9E77", "#D8B5D9", "#FFC325", "#A49D8F", "#1EC2D1"],
+    };
+  },
+  mounted() {
+    let result = {};
+
+    this.passedData.contents.forEach((item) => {
+      Object.keys(item).forEach((key) => {
+        if (!result[key]) {
+          result[key] = {
+            data: [],
+          };
         }
-    },
-    mounted() {
-        const headers = {
-            'ngrok-skip-browser-warning': 'true',
-            tableName: 'data_sampel5',
-            columnNames: ['provinsi', 'durian']
-        }
+        result[key].data.push(item[key]);
+      });
+    });
 
-        axios.post('https://5117-180-243-17-120.ngrok-free.app/api/v1/data', headers)
-            .then(response => {
-                var parsedData = response.data.entity.map(jsonString => JSON.parse(jsonString));
-                var labels = parsedData.map(data => data.provinsi);
-                var data = parsedData.map(data => data.durian);
+    this.chartData = [];
 
-                // Define an array of 5 pastel colors
-                var colors = ['#FFB3BA', '#FFDFBA', '#FFFFBA', '#BAFFC9', '#BAE1FF'];
+    Object.keys(result).forEach((key) => {
+      const label = this.passedData.xLabel;
 
-                // Map the data to colors
-                var backgroundColors = data.map((_, i) => colors[i % colors.length]);
-
-                this.data = {
-                    labels: labels,
-                    datasets: [
-                        {
-                            data: data,
-                            backgroundColor: backgroundColors
-                        }
-                    ]
-                }
-            })
-            .catch(error => {
-                console.log(error);
-            });
-    }
-}
+      this.chartData.push({
+        labels: label,
+        datasets: [
+          {
+            backgroundColor: this.colors.slice(0, label.length),
+            data: result[key].data,
+          },
+        ],
+      });
+    });
+  },
+};
 </script>
