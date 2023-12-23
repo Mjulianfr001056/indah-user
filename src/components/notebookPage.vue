@@ -36,7 +36,7 @@
 
     <div class="ma pa">
       <div class="analisis-deskriptif">
-        <v-dialog v-model="dialogDeskriptif" width="1024">
+        <v-dialog v-model="deskriptifDialog" width="1024">
           <template v-slot:activator="{ props }">
             <v-btn color="#43A047" v-bind="props" @click="openDialog('Deskriptif')">Statistik Deskriptif</v-btn>
           </template>
@@ -46,6 +46,9 @@
             </v-card-title>
             <v-card-text>
               <v-container class="radio-button-list">
+                <v-alert v-model="showError" closable title="Terjadi error!"
+                  text="Silakan lengkapi kolom berikut sebelum melakukan analisis" type="error" variant="tonal"></v-alert>
+                <br>
                 <v-row required>
                   <v-col cols="12" sm="6" required>
                     <v-select v-model="selectedColumns" :items=headersArray label="Kolom" required multiple></v-select>
@@ -59,7 +62,7 @@
             </v-card-text>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn color="blue-darken-1" variant="text" @click="tutupDialog">
+              <v-btn color="blue-darken-1" variant="text" @click="tutupDialog('deskriptif')">
                 Tutup
               </v-btn>
               <v-btn color="blue-darken-1" variant="text" @click="pilihDeskriptif">
@@ -198,7 +201,7 @@
         <p>Hasil</p>
       </v-sheet>
       <v-sheet class="ma-2 pa-2">
-        <v-btn color="#43A047" @click = "downloadAsPDF()">
+        <v-btn color="#43A047" @click="downloadAsPDF()">
           Unduh
         </v-btn>
       </v-sheet>
@@ -254,7 +257,8 @@ export default {
   data() {
     return {
       onLoading: false,
-      dialogDeskriptif: false,
+      showError: false,
+      deskriptifDialog: false,
       dialog2: false,
       dialog3: false,
       dialogKolomInferensia: false,
@@ -296,7 +300,7 @@ export default {
     },
   },
   methods: {
-    clearInput(){
+    clearInput() {
       this.selectedColumns = [];
       this.selectedDescriptiveStats = [];
       this.selectedCharts = [];
@@ -304,7 +308,17 @@ export default {
       this.labelColumn = [];
     },
 
+    validateColumnSelection(...componentNames) {
+      for (const componentName of componentNames) {
+        if (!componentName || componentName.length === 0) {
+          return true;
+        }
+      }
+      return false;
+    },
+
     tutupDialog(componentName) {
+      this.showError = false;
       this[`${componentName}Dialog`] = false;
       this.clearInput();
     },
@@ -313,7 +327,7 @@ export default {
       this.$emit('tableIdChanged', this.idDataTerpilih);
       this.tutupDialog('tambahData');
 
-      axios.get(API_ENDPOINT + 'data/' + this.idDataTerpilih, {headers: HEADER })
+      axios.get(API_ENDPOINT + 'data/' + this.idDataTerpilih, { headers: HEADER })
         .then(response => {
           this.headersArray = response.data.entity.headers;
 
@@ -328,27 +342,19 @@ export default {
         .catch(error => {
           console.error('Error fetching data:', error);
         });
-      
+
       this.clearInput();
     },
 
     pilihDeskriptif() {
-      this.dialogDeskriptif = false
-      // Memeriksa apakah v-col sudah diisi
-      if (!this.selectedColumns || this.selectedColumns.length === 0) {
-        this.tampilkanAlert('Anda Belum Memilih Kolom');
+      const validationResult = this.validateColumnSelection(this.selectedColumns, this.selectedDescriptiveStats);
+      
+      if (validationResult) {
+        this.showError = true;
         return;
       }
-
-      // Memeriksa apakah v-autocomplete sudah diisi
-      if (!this.selectedDescriptiveStats || this.selectedDescriptiveStats.length === 0) {
-        this.tampilkanAlert('Anda Belum Memilih Deskriptif');
-        return;
-      }
-
 
       this.descriptiveTobePassed = {
-        'ngrok-skip-browser-warning': 'true',
         tableId: this.idDataTerpilih,
         columnNames: this.selectedColumns,
       }
@@ -366,9 +372,9 @@ export default {
         }
       });
 
-      this.selectedColumns = [];
-      this.selectedDescriptiveStats = [];
+      this.tutupDialog('deskriptif');
     },
+
     tutupDialogInferensia() {
       this.dialog2 = false;
       this.dialogKolomInferensia = false;
@@ -521,17 +527,17 @@ export default {
       alert(pesan);
     },
     downloadAsPDF() {
-      const elementToCapture = document.querySelector('.box-output'); 
+      const elementToCapture = document.querySelector('.box-output');
       html2canvas(elementToCapture).then(canvas => {
         const imgData = canvas.toDataURL('image/png');
-        
+
         // Use jsPDF to create a PDF document
         const pdf = new jsPDF('landscape');
         const imgWidth = pdf.internal.pageSize.getWidth();
         const imgHeight = (canvas.height * imgWidth) / canvas.width;
-        
+
         pdf.addImage(imgData, 'PNG', 10, 10, imgWidth - 20, imgHeight - 20);
-        
+
         // Download the PDF
         pdf.save('visualization.pdf');
       });
@@ -540,25 +546,25 @@ export default {
 
   mounted() {
     this.onLoading = true;
-    axios.post(API_ENDPOINT + 'data/katalog', { headers : HEADER })
-    .then(response => {
-      const parsedData = response.data.entity.map(jsonString => JSON.parse(jsonString));
-      const sortedData = parsedData.sort((a, b) => {
-        const titleA = a.judul.toLowerCase();
-        const titleB = b.judul.toLowerCase();
+    axios.post(API_ENDPOINT + 'data/katalog', { headers: HEADER })
+      .then(response => {
+        const parsedData = response.data.entity.map(jsonString => JSON.parse(jsonString));
+        const sortedData = parsedData.sort((a, b) => {
+          const titleA = a.judul.toLowerCase();
+          const titleB = b.judul.toLowerCase();
 
-        if (titleA < titleB) return -1;
-        if (titleA > titleB) return 1;
-        return 0;
+          if (titleA < titleB) return -1;
+          if (titleA > titleB) return 1;
+          return 0;
+        });
+        this.katalogData = sortedData;
+      })
+      .catch(error => {
+        console.error('Error fetching katalog data:', error);
+      })
+      .finally(() => {
+        this.onLoading = false;
       });
-      this.katalogData = sortedData;
-    })
-    .catch(error => {
-      console.error('Error fetching katalog data:', error);
-    })
-    .finally(() => {
-      this.onLoading = false;
-    });
   }
 }
 </script>
