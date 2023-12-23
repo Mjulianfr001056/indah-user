@@ -229,7 +229,7 @@
         <p>Hasil</p>
       </v-sheet>
       <v-sheet class="ma-2 pa-2">
-        <v-btn color="#43A047" @click="downloadAsPDF()">
+        <v-btn :loading="onLoading" color="#43A047" @click="downloadAsPDF()">
           Unduh
         </v-btn>
       </v-sheet>
@@ -532,11 +532,11 @@ export default {
     },
 
     downloadAsPDF() {
+      this.onLoading = true;
       const elementToCapture = document.querySelector('.box-output');
       html2canvas(elementToCapture).then(canvas => {
         const imgData = canvas.toDataURL('image/png');
 
-        // Use jsPDF to create a PDF document
         const pdf = new jsPDF('landscape');
         const imgWidth = pdf.internal.pageSize.getWidth();
         const imgHeight = (canvas.height * imgWidth) / canvas.width;
@@ -544,6 +544,7 @@ export default {
         pdf.addImage(imgData, 'PNG', 10, 10, imgWidth - 20, imgHeight - 20);
 
         pdf.save('visualization.pdf');
+        this.onLoading = false;
       });
     },
   },

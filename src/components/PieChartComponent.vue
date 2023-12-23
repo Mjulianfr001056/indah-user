@@ -78,8 +78,6 @@ export default {
             }],
           });
         });
-
-        console.log(this.chartData);
       })
       .catch(error => console.log(error))
       .finally(() => {
