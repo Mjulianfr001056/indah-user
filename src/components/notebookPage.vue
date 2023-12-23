@@ -20,10 +20,10 @@
             </v-card-text>
             <v-divider></v-divider>
             <v-card-actions class="justify-end">
-              <v-btn color="blue-darken-1" variant="text" @click="tutupDialog('tambahData')">
+              <v-btn color="blue-grey-lighten-1" variant="text" @click="tutupDialog('tambahData')">
                 Tutup
               </v-btn>
-              <v-btn color="blue-darken-1" variant="text" @click="pilihData">
+              <v-btn color="green-darken-1" variant="tonal" @click="pilihData">
                 Simpan
               </v-btn>
             </v-card-actions>
@@ -59,10 +59,10 @@
             </v-card-text>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn color="blue-darken-1" variant="text" @click="tutupDialog('deskriptif')">
+              <v-btn color="blue-grey-lighten-1" variant="text" @click="tutupDialog('deskriptif')">
                 Tutup
               </v-btn>
-              <v-btn color="blue-darken-1" variant="text" @click="pilihDeskriptif">
+              <v-btn color="green-darken-1" variant="tonal" @click="pilihDeskriptif">
                 Simpan
               </v-btn>
             </v-card-actions>
@@ -229,6 +229,10 @@
         <p>Hasil</p>
       </v-sheet>
       <v-sheet class="ma-2 pa-2">
+        <v-btn color="red-accent-3" variant="outlined" @click="clearOutput">
+          Hapus
+        </v-btn>
+        <v-divider class="mx-1" vertical></v-divider>
         <v-btn :loading="onLoading" color="#43A047" @click="downloadAsPDF()">
           Unduh
         </v-btn>
@@ -343,6 +347,12 @@ export default {
       this.selectedChart = [];
       this.labelColumn = [];
       this.selectedRows = [];
+    },
+
+    clearOutput() {
+      this.descriptiveComponent = [];
+      this.inferenceComponent = [];
+      this.visualComponents = [];
     },
 
     validateColumnSelection(...componentNames) {
