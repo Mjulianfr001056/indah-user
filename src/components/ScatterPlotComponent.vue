@@ -17,7 +17,7 @@ import { Chart as ChartJS, LinearScale, PointElement, LineElement, Tooltip, Lege
 ChartJS.register(LinearScale, PointElement, LineElement, Tooltip, Legend)
 
 export default {
-    name: 'App',
+    name: 'ScatterPlot',
     components: { Scatter },
     props: {
         passedData: {

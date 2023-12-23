@@ -139,7 +139,7 @@
               <v-btn color="blue-grey-lighten-1" @click="tutupDialog('visualisasi')">
                 Tutup
               </v-btn>
-              <v-btn variant="tonal" color="blue-darken-1" @click="alihDialog('visualisasi', 'visualisasiLanjutan')">
+              <v-btn variant="tonal" color="blue-darken-1" @click="pilahDialog">
                 Lanjut
               </v-btn>
             </v-card-actions>
@@ -172,12 +172,43 @@
               <v-btn color="blue-grey-lighten-1" @click="alihDialog('visualisasiLanjutan', 'visualisasi')">
                 Balik
               </v-btn>
-              <v-btn color="green-darken-1" variant="tonal" @click="pilihVisualisasi">
+              <v-btn color="green-darken-1" variant="tonal" @click="pilihVisualisasi('lanjutan')">
                 Simpan
               </v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
+
+        <v-dialog v-model="visualisasiLineChartDialog" width="600">
+          <v-card style="padding: 10px">
+            <v-card-title>
+              <span class="text-h5">Pilih Baris</span>
+            </v-card-title>
+            <v-divider></v-divider>
+            <v-card-text>
+              <v-container class="radio-button-list">
+                <v-alert v-model="showError" closable title="Terjadi error!"
+                  text="Silakan lengkapi baris sebelum melakukan analisis!" type="error" variant="tonal"></v-alert>
+                <br>
+                <v-row required>
+                  <v-col cols="12" sm="12" required>
+                    <v-autocomplete v-model="selectedRows" :items=dataRows label="Baris" multiple
+                      required></v-autocomplete>
+                  </v-col>
+                </v-row>
+              </v-container>
+            </v-card-text>
+            <v-card-actions class="justify-end">
+              <v-btn color="blue-grey-lighten-1" @click="alihDialog('visualisasiLineChart', 'visualisasi')">
+                Balik
+              </v-btn>
+              <v-btn color="green-darken-1" variant="tonal" @click="pilihVisualisasi('lineChart')">
+                Simpan
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+
       </div>
     </div>
   </v-sheet>
@@ -259,6 +290,7 @@ export default {
       showError: false,
       katalogData: [],
       tableHeaders: [],
+      dataRows: [],
       tableContents: [],
       search: '',
       headersArray: [],
@@ -279,11 +311,13 @@ export default {
 
       visualisasiDialog: false,
       visualisasiLanjutanDialog: false,
+      visualisasiLineChartDialog: false,
       availableChart: ['Bar Chart', 'Pie Chart', 'Line Chart', 'Scatter Plot'],
       chartComponents: ['BarChartComponent', 'ScatterPlotComponent', 'PieChartComponent', 'LineChartComponent'],
       selectedChart: null,
       labelColumn: null,
       selectedColumns: [],
+      selectedRows: [],
       dataTobePassed: {},
       visualComponents: [],
     }
@@ -305,6 +339,7 @@ export default {
       this.selectedInferential = [];
       this.selectedChart = [];
       this.labelColumn = [];
+      this.selectedRows = [];
     },
 
     validateColumnSelection(...componentNames) {
@@ -331,6 +366,33 @@ export default {
       this[`${endComponent}Dialog`] = true;
     },
 
+    pilahDialog() {
+      if (this.selectedChart === 'Line Chart') {
+        this.alihDialog('visualisasi', 'visualisasiLineChart');
+      } else {
+        this.alihDialog('visualisasi', 'visualisasiLanjutan');
+      }
+    },
+
+    getRow() {
+      HEADER.tableId = this.idDataTerpilih;
+      HEADER.columnNames = [this.headersArray[0]];
+
+      axios.post(API_ENDPOINT + 'data/', HEADER)
+        .then(response => {
+          const contents = response.data.entity.map(jsonString => JSON.parse(jsonString));
+          this.dataRows = contents.map(data => data[this.headersArray[0]]);
+        })
+        .catch(error => {
+          console.error('Error fetching data:', error);
+        })
+        .finally(
+          delete HEADER.tableId,
+          delete HEADER.columnNames,
+          this.clearInput()
+        );
+    },
+
     pilihData() {
       this.$emit('tableIdChanged', this.idDataTerpilih);
       this.tutupDialog('tambahData');
@@ -346,12 +408,12 @@ export default {
           const contents = response.data.entity.contents.map(jsonString => JSON.parse(jsonString));
           this.tableHeaders = mappedHeaders;
           this.tableContents = contents;
+
+          this.getRow();
         })
         .catch(error => {
           console.error('Error fetching data:', error);
         });
-
-      this.clearInput();
     },
 
     pilihDeskriptif() {
@@ -423,21 +485,29 @@ export default {
       this.tutupDialog('inferensiaLanjutan')
     },
 
-    pilihVisualisasi() {
-      const validationResult = this.validateColumnSelection(this.selectedChart, this.labelColumn, this.selectedColumns);
+    pilihVisualisasi(priorActivity) {
+      let validationResult = false;
+      if (priorActivity === "lineChart") {
+        validationResult = this.validateColumnSelection(this.selectedChart, this.selectedRows);
+        
+        this.dataTobePassed = {
+          tableId: this.idDataTerpilih,
+          rowNames: this.selectedRows,
+          labelRow: this.headersArray
+        }
+      } else {
+        validationResult = this.validateColumnSelection(this.selectedChart, this.labelColumn, this.selectedColumns);
+
+        this.dataTobePassed = {
+          tableId: this.idDataTerpilih,
+          columnNames: this.selectedColumns,
+          labelColumn: this.labelColumn
+        }
+      }
 
       if (validationResult) {
         this.showError = true;
         return;
-      }
-
-      this.dataTobePassed = {
-        tableId: this.idDataTerpilih,
-        columnNames: this.selectedColumns,
-        labelColumn: this.labelColumn
-        // xLabel: label,
-        // headers: HEADER.columnNames,
-        // contents: filteredContents
       }
 
       switch (this.selectedChart) {
@@ -457,6 +527,7 @@ export default {
           break;
       }
 
+      this.tutupDialog('visualisasiLineChart');
       this.tutupDialog('visualisasiLanjutan');
     },
 
