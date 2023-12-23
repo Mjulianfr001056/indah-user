@@ -46,8 +46,7 @@
             </v-card-title>
             <v-card-text>
               <v-container class="radio-button-list">
-                <v-alert v-model="showError" closable title="Terjadi error!"
-                  text="Silakan lengkapi kolom berikut sebelum melakukan analisis" type="error" variant="tonal"></v-alert>
+                <v-alert v-model="showError" closable title="Terjadi error!" text="Silakan lengkapi kolom berikut sebelum melakukan analisis" type="error" variant="tonal"></v-alert>
                 <br>
                 <v-row required>
                   <v-col cols="12" sm="6" required>

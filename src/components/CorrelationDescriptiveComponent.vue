@@ -1,30 +1,37 @@
 <template>
-    <div class="judul">
-        <h2>Correlation</h2>
-    </div>
-    <div class="matrix-responsive">
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>Variable</th>
-                    <th v-for="variable in correlationVariables" :key="variable">{{ variable }}</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr v-for="(rowValue, rowKey) in correlation" :key="rowKey">
-                    <td>{{ rowKey }}</td>
-                    <td v-for="colKey in correlationVariables" :key="colKey">
-                        {{ correlation[rowKey][colKey] }}
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+    <div>
+        <div v-if="!errorOccurred">
+            <div class="judul">
+                <h2>Correlation</h2>
+            </div>
+            <div class="matrix-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Variable</th>
+                            <th v-for="variable in correlationVariables" :key="variable" style="text-align: center">{{ variable }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(rowValue, rowKey) in correlation" :key="rowKey" style="text-align: center">
+                            <td>{{ rowKey }}</td>
+                            <td v-for="colKey in correlationVariables" :key="colKey" style="text-align: center">
+                                {{ correlation[rowKey][colKey] }}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div v-else>
+            <v-alert class="mb-4" title="Terjadi error!" text="Terjadi error saat melakukan perhitungan korelasi!" type="error" variant="outlined"></v-alert>
+        </div>
     </div>
 </template>
 
 <script>
 import axios from 'axios';
-import { API_ENDPOINT } from '@/others/config';
+import { API_ENDPOINT, BASE_NGROK_HEADER as HEADER } from '@/others/config';
 
 export default {
     name: 'CorrelationDescriptiveComponent',
@@ -37,13 +44,15 @@ export default {
     data() {
         return {
             correlation: {},
-            correlationVariables: ['Variable1', 'Variable2', 'Variable3']
+            correlationVariables: [],
+            errorOccurred: false,
         }
     },
     mounted() {
-        const header = this.passedDescriptive
+        HEADER['tableId'] = this.passedDescriptive['tableId'];
+        HEADER['columnNames'] = this.passedDescriptive['columnNames'];
 
-        axios.post(API_ENDPOINT + '/desc/correlation', header)
+        axios.post(API_ENDPOINT + 'desc/correlation', HEADER)
             .then(response => {
                 const matrixString = response.data.entity;
                 let matrix = matrixString.split('\n').map(
@@ -59,19 +68,33 @@ export default {
 
                 this.correlationVariables = [...this.passedDescriptive.columnNames];
 
-                // Construct the correlation object
                 for (let i = 0; i < numRows; i++) {
                     const rowKey = this.correlationVariables[i];
                     this.correlation[rowKey] = {};
+
                     for (let j = 0; j < numCols; j++) {
                         const colKey = this.correlationVariables[j];
-                        this.correlation[rowKey][colKey] = matrix[i][j];
+                        let value = matrix[i][j];
+
+                        // Check if the value is a number and has decimals
+                        if (!isNaN(Number(value)) && value % 1 !== 0) {
+                            // Round to 2 significant figures
+                            value = Number(value).toFixed(4);
+                        }
+
+                        this.correlation[rowKey][colKey] = value;
                     }
                 }
+
             })
             .catch(error => {
-                console.log(error);
+                console.log(error)
+                this.errorOccurred = true;
             })
+            .finally(() => {
+                delete HEADER['tableId'];
+                delete HEADER['columnNames'];
+            });
 
     }
 }
