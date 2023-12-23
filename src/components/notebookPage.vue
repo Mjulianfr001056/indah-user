@@ -431,54 +431,33 @@ export default {
         return;
       }
 
-      this.selectedColumns.push(this.labelColumn);
+      this.dataTobePassed = {
+        tableId: this.idDataTerpilih,
+        columnNames: this.selectedColumns,
+        labelColumn: this.labelColumn
+        // xLabel: label,
+        // headers: HEADER.columnNames,
+        // contents: filteredContents
+      }
 
-      HEADER['tableId'] = this.idDataTerpilih;
-      HEADER['columnNames'] = this.selectedColumns;
+      switch (this.selectedChart) {
+        case 'Bar Chart':
+          this.visualComponents.push("BarChartComponent");
+          break;
+        case 'Pie Chart':
+          this.visualComponents.push("PieChartComponent");
+          break;
+        case 'Line Chart':
+          this.visualComponents.push("LineChartComponent");
+          break;
+        case 'Scatter Plot':
+          this.visualComponents.push("ScatterPlotComponent");
+          break;
+        default:
+          break;
+      }
 
-      axios.post(API_ENDPOINT + 'data/', HEADER)
-        .then(response => {
-          const contents = response.data.entity.map(jsonString => JSON.parse(jsonString));
-
-          let label = contents.map(data => data[this.labelColumn]);
-
-          let filteredContents = contents.map(item => {
-            let newItem = { ...item };
-            delete newItem[this.labelColumn];
-            return newItem;
-          });
-
-          this.dataTobePassed = {
-            xLabel: label,
-            headers: HEADER.columnNames,
-            contents: filteredContents
-          }
-
-          switch (this.selectedChart) {
-            case 'Bar Chart':
-              this.visualComponents.push("BarChartComponent");
-              break;
-            case 'Pie Chart':
-              console.log(this.selectedColumns)
-              this.visualComponents.push("PieChartComponent");
-              break;
-            case 'Line Chart':
-              this.visualComponents.push("LineChartComponent");
-              break;
-            case 'Scatter Plot':
-              this.visualComponents.push("ScatterPlotComponent");
-              break;
-            default:
-              break;
-          }
-        })
-        .catch(error => {
-          console.log(error);
-        }).finally(() => {
-          delete HEADER['tableId'];
-          delete HEADER['columnNames'];
-          this.tutupDialog('visualisasiLanjutan');
-        });
+      this.tutupDialog('visualisasiLanjutan');
     },
 
     downloadAsPDF() {
