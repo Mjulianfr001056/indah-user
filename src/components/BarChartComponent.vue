@@ -8,6 +8,8 @@
 </template>
   
 <script>
+import axios from 'axios'
+import { API_ENDPOINT, BASE_NGROK_HEADER as HEADER } from '@/others/config'
 import { Bar } from 'vue-chartjs'
 import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale } from 'chart.js'
 
@@ -45,30 +47,50 @@ export default {
     },
     mounted() {
         console.log(this.passedData)
-        let result = {}
+        HEADER.tableId = this.passedData.tableId
+        HEADER.columnNames = [...this.passedData.columnNames, this.passedData.labelColumn];
 
-        this.passedData.contents.forEach(item => {
-            Object.keys(item).forEach(key => {
-                if (!result[key]) {
-                    result[key] = {
-                        label: key,
-                        data: []
-                    }
-                }
-                result[key].data.push(item[key]);
-            })
-        })
+        axios.post(API_ENDPOINT + 'data/', HEADER)
+            .then(response => {
+                let contents = response.data.entity.map(jsonString => JSON.parse(jsonString))
+                let xLabel = contents.map(data => data[this.passedData.labelColumn]);
+                let result = {}
+                let filteredContents = contents.map(item => {
+                    let newItem = { ...item };
+                    delete newItem[this.passedData.labelColumn];
+                    return newItem;
+                });
 
-        this.chartData = {
-            labels: this.passedData.xLabel,
-            datasets: Object.keys(result).map((key, index) => {
-                return {
-                    label: result[key].label,
-                    data: result[key].data,
-                    backgroundColor: this.pastelColors[index % this.pastelColors.length],
+                filteredContents.forEach(item => {
+                    Object.keys(item).forEach(key => {
+                        if (!result[key]) {
+                            result[key] = {
+                                label: key,
+                                data: []
+                            }
+                        }
+                        result[key].data.push(item[key]);
+                    })
+                })
+
+                this.chartData = {
+                    labels: xLabel,
+                    datasets: Object.keys(result).map((key, index) => {
+                        return {
+                            label: result[key].label,
+                            data: result[key].data,
+                            backgroundColor: this.pastelColors[index % this.pastelColors.length],
+                        }
+                    })
                 }
             })
-        }
+            .catch(error => {
+                console.log(error)
+            })
+            .finally(() => {
+                delete HEADER.tableId
+                delete HEADER.columnNames
+            })
     }
 }
 </script>
