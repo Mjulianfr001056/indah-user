@@ -125,54 +125,54 @@
 
     <div class="ma pa">
       <div class="visualisasi-data">
-        <!-- Tombol untuk membuka dialog pertama -->
-        <v-btn color="#43A047" v-bind="props" @click="bukaDialog(3)">Visualisasi Data</v-btn>
-        <!-- Dialog Pertama: Memilih Chart -->
-        <v-dialog v-model="dialog3" width="600">
-          <v-card>
+        <v-btn color="#43A047" @click="bukaDialog('visualisasi')">Visualisasi Data</v-btn>
+        <v-dialog v-model="visualisasiDialog" width="600">
+          <v-card style="padding: 10px;">
             <v-card-title>
               <span class="text-h5">Pilih Chart</span>
             </v-card-title>
+            <v-divider></v-divider>
             <v-card-text>
-              <v-checkbox v-model="selectedCharts" class="checkbox-kolom" v-for="chart in availableChart" :key="chart"
-                :label="chart" :value="chart"></v-checkbox>
+              <v-select v-model="selectedChart" :items="availableChart" label="Pilih diagram"></v-select>
             </v-card-text>
             <v-card-actions class="justify-end">
-              <v-btn color="blue-darken-1" variant="text" @click="tutupDialogVisualisasi">
+              <v-btn color="blue-grey-lighten-1" @click="tutupDialog('visualisasi')">
                 Tutup
               </v-btn>
-              <v-btn color="blue-darken-1" variant="text" @click="openDialogKolomVisualisasi">
-                Simpan
+              <v-btn variant="tonal" color="blue-darken-1" @click="alihDialog('visualisasi', 'visualisasiLanjutan')">
+                Lanjut
               </v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
 
-        <!-- Dialog Kedua: Memilih Kolom -->
-        <v-dialog v-model="dialogKolomVisualisasi" width="600">
-          <v-card>
+        <v-dialog v-model="visualisasiLanjutanDialog" width="600">
+          <v-card style="padding: 10px">
             <v-card-title>
               <span class="text-h5">Pilih Kolom</span>
             </v-card-title>
+            <v-divider></v-divider>
             <v-card-text>
               <v-container class="radio-button-list">
+                <v-alert v-model="showError" closable title="Terjadi error!"
+                  text="Silakan lengkapi kolom sebelum melakukan analisis!" type="error" variant="tonal"></v-alert>
+                <br>
                 <v-row required>
                   <v-col cols="12" sm="6" required>
-                    <v-select v-model="labelColumn" :items=filteredColumnsForSelect label="Label" required></v-select>
+                    <v-select v-model="labelColumn" :items=filteredLabelOptions label="Label" required></v-select>
                   </v-col>
                   <v-col cols="12" sm="6" required>
-                    <v-autocomplete v-model="selectedColumns" :items=filteredColumnsForAutocomplete label="Kolom" multiple
+                    <v-autocomplete v-model="selectedColumns" :items=filteredColumnsOptions label="Kolom" multiple
                       required></v-autocomplete>
                   </v-col>
                 </v-row>
               </v-container>
             </v-card-text>
             <v-card-actions class="justify-end">
-              <v-btn color="blue-darken-1" variant="text" @click="tutupDialogVisualisasi">
-                Tutup
+              <v-btn color="blue-grey-lighten-1" @click="alihDialog('visualisasiLanjutan', 'visualisasi')">
+                Balik
               </v-btn>
-              <!-- Tambahkan logika simpan jika diperlukan -->
-              <v-btn color="blue-darken-1" variant="text" @click="pilihVisualisasi">
+              <v-btn color="green-darken-1" variant="tonal" @click="pilihVisualisasi">
                 Simpan
               </v-btn>
             </v-card-actions>
@@ -188,7 +188,7 @@
           hide-details></v-text-field>
       </template>
 
-      <v-data-table :headers="dataHeaders" :items="dataContents" :search="search"></v-data-table>
+      <v-data-table :headers="tableHeaders" :items="tableContents" :search="search"></v-data-table>
     </v-card>
   </div>
 
@@ -216,7 +216,7 @@
 
           <!-- Komponen Inferensia -->
           <template v-for="(component, index) in inferenceComponent">
-              <component :key="index" :is="component" :passedInference="inferenceTobePassed" v-if="inferenceTobePassed" />
+            <component :key="index" :is="component" :passedInference="inferenceTobePassed" v-if="inferenceTobePassed" />
           </template>
 
           <!-- Komponen Visualisasi -->
@@ -257,52 +257,53 @@ export default {
     return {
       onLoading: false,
       showError: false,
+      katalogData: [],
+      tableHeaders: [],
+      tableContents: [],
+      search: '',
+      headersArray: [],
       tambahDataDialog: false,
+      idDataTerpilih: null,
+
       deskriptifDialog: false,
+      selectedDescriptiveStats: [],
+      descriptiveTobePassed: null,
       descriptiveComponent: [],
 
       inferensiaDialog: false,
       inferensiaLanjutanDialog: false,
+      availableInfentialStats: ['Paired t-test', 'Unpaired t-test', 'One Way Anova', 'Wilcoxon Rank Test', 'Mann Whitney U-test', 'Kruskal Wallis Test'],
+      selectedInferential: [],
+      inferenceTobePassed: null,
       inferenceComponent: [],
 
-      dialog3: false,
-      dialogKolomVisualisasi: false,
-      dialogm1: '',
-      search: '',
-      headersArray: [],
-      dataHeaders: [],
-      dataContents: [],
-      katalogData: [],
-      selectedColumns: null,
-      labelColumn: [],
-      selectedDescriptiveStats: [],
-      selectedInferential: [],
-      selectedCharts: [],
-      summaryEntity: [],
-      availableInfentialStats: ['Paired t-test', 'Unpaired t-test', 'One Way Anova', 'Wilcoxon Rank Test', 'Mann Whitney U-test', 'Kruskal Wallis Test'],
+      visualisasiDialog: false,
+      visualisasiLanjutanDialog: false,
       availableChart: ['Bar Chart', 'Pie Chart', 'Line Chart', 'Scatter Plot'],
-      idDataTerpilih: null,
-      visualComponents: [],
       chartComponents: ['BarChartComponent', 'ScatterPlotComponent', 'PieChartComponent', 'LineChartComponent'],
-      dataTobePassed: null,
-      descriptiveTobePassed: null,
-      inferenceTobePassed: null,
+      selectedChart: null,
+      labelColumn: null,
+      selectedColumns: [],
+      dataTobePassed: {},
+      visualComponents: [],
     }
   },
+
   computed: {
-    filteredColumnsForSelect() {
-      return this.headersArray.filter(item => !this.selectedColumns.includes(item));
+    filteredLabelOptions() {
+      return this.headersArray.filter((option) => !this.selectedColumns.includes(option));
     },
-    filteredColumnsForAutocomplete() {
-      return this.headersArray.filter(item => !this.labelColumn.includes(item));
+    filteredColumnsOptions() {
+      return this.headersArray.filter((option) => option !== this.labelColumn);
     },
   },
+
   methods: {
     clearInput() {
       this.selectedColumns = [];
       this.selectedDescriptiveStats = [];
       this.selectedInferential = [];
-      this.selectedCharts = [];
+      this.selectedChart = [];
       this.labelColumn = [];
     },
 
@@ -343,8 +344,8 @@ export default {
           });
 
           const contents = response.data.entity.contents.map(jsonString => JSON.parse(jsonString));
-          this.dataHeaders = mappedHeaders;
-          this.dataContents = contents;
+          this.tableHeaders = mappedHeaders;
+          this.tableContents = contents;
         })
         .catch(error => {
           console.error('Error fetching data:', error);
@@ -423,25 +424,24 @@ export default {
     },
 
     pilihVisualisasi() {
-      this.dialog3 = false
-      // Memeriksa apakah v-col sudah diisi
-      if (!this.selectedColumns || this.selectedColumns.length === 0) {
-        this.tampilkanAlert('Anda Belum Memilih Kolom');
+      const validationResult = this.validateColumnSelection(this.selectedChart, this.labelColumn, this.selectedColumns);
+
+      if (validationResult) {
+        this.showError = true;
         return;
       }
 
       this.selectedColumns.push(this.labelColumn);
 
-      const headers = {
-        'ngrok-skip-browser-warning': 'true',
-        tableId: this.idDataTerpilih,
-        columnNames: this.selectedColumns
-      }
+      HEADER['tableId'] = this.idDataTerpilih;
+      HEADER['columnNames'] = this.selectedColumns;
 
-      axios.post(API_ENDPOINT + 'data/', headers)
+      axios.post(API_ENDPOINT + 'data/', HEADER)
         .then(response => {
           const contents = response.data.entity.map(jsonString => JSON.parse(jsonString));
+
           let label = contents.map(data => data[this.labelColumn]);
+
           let filteredContents = contents.map(item => {
             let newItem = { ...item };
             delete newItem[this.labelColumn];
@@ -450,59 +450,37 @@ export default {
 
           this.dataTobePassed = {
             xLabel: label,
-            headers: headers.columnNames,
+            headers: HEADER.columnNames,
             contents: filteredContents
           }
 
-          console.log(this.dataTobePassed)
+          switch (this.selectedChart) {
+            case 'Bar Chart':
+              this.visualComponents.push("BarChartComponent");
+              break;
+            case 'Pie Chart':
+              console.log(this.selectedColumns)
+              this.visualComponents.push("PieChartComponent");
+              break;
+            case 'Line Chart':
+              this.visualComponents.push("LineChartComponent");
+              break;
+            case 'Scatter Plot':
+              this.visualComponents.push("ScatterPlotComponent");
+              break;
+            default:
+              break;
+          }
         })
         .catch(error => {
           console.log(error);
+        }).finally(() => {
+          delete HEADER['tableId'];
+          delete HEADER['columnNames'];
+          this.tutupDialog('visualisasiLanjutan');
         });
-
-
-      this.visualComponents = [];
-
-      this.selectedCharts.forEach((chart) => {
-        switch (chart) {
-          case 'Bar Chart':
-            this.visualComponents.push("BarChartComponent");
-            break;
-          case 'Pie Chart':
-            console.log(this.selectedColumns)
-            this.visualComponents.push("PieChartComponent");
-            break;
-          case 'Line Chart':
-            this.visualComponents.push("LineChartComponent");
-            break;
-          case 'Scatter Plot':
-            this.visualComponents.push("ScatterPlotComponent");
-            break;
-          default:
-            break;
-        }
-      });
-
-      this.labelColumn = [];
-      this.selectedColumns = [];
-      this.selectedCharts = [];
-      this.dialogKolomVisualisasi = false;
     },
 
-    openDialogKolomVisualisasi() {
-      // Pastikan telah memilih uji statistik sebelum membuka dialog kolom
-      if (!this.selectedCharts || this.selectedCharts.length === 0) {
-        this.tampilkanAlert('Anda Belum Memilih Visualisasi');
-        return;
-      }
-      this.dialog3 = false;
-      this.dialogKolomVisualisasi = true;
-    },
-
-    tampilkanAlert(pesan) {
-      // Metode untuk menampilkan alert
-      alert(pesan);
-    },
     downloadAsPDF() {
       const elementToCapture = document.querySelector('.box-output');
       html2canvas(elementToCapture).then(canvas => {
@@ -515,7 +493,6 @@ export default {
 
         pdf.addImage(imgData, 'PNG', 10, 10, imgWidth - 20, imgHeight - 20);
 
-        // Download the PDF
         pdf.save('visualization.pdf');
       });
     },
