@@ -263,13 +263,16 @@
 <script>
 import { API_ENDPOINT, BASE_NGROK_HEADER as HEADER } from '@/others/config';
 import axios from 'axios';
-import BarChartComponent from './BarChartComponent.vue';
-import ScatterPlotComponent from './ScatterPlotComponent.vue';
-import PieChartComponent from './PieChartComponent.vue';
-import LineChartComponent from './LineChartComponent.vue';
-import AnovaInferenceComponent from './AnovaInferenceComponent.vue';
-import SummaryDescriptiveComponent from './SummaryDescriptiveComponent.vue';
-import CorrelationDescriptiveComponent from './CorrelationDescriptiveComponent.vue';
+import {
+  BarChartComponent,
+  ScatterPlotComponent,
+  PieChartComponent,
+  LineChartComponent,
+} from './visualization';
+
+import AnovaInferenceComponent from './inference/AnovaInferenceComponent.vue';
+import SummaryDescriptiveComponent from './descriptive/SummaryDescriptiveComponent.vue';
+import CorrelationDescriptiveComponent from './descriptive/CorrelationDescriptiveComponent.vue';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 
