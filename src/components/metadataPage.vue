@@ -11,7 +11,8 @@
 </template>
   
 <script>
-import axios from 'axios';
+import axios from 'axios'
+import { API_ENDPOINT, BASE_NGROK_HEADER as HEADER } from '@/others/config'
 
 export default {
   name: 'MetadataPage',
@@ -36,19 +37,19 @@ export default {
   },
   methods: {
     fetchData() {
-      const headers = {
-        'ngrok-skip-browser-warning': 'true',
-        tableId: this.tableId,
-      };
+      this.tableContents = [];
+      HEADER.tableId = this.tableId;
 
-      axios.post('localhost:8080/api/v1/data/ket', headers)
+      axios.post(API_ENDPOINT + 'data/ket', HEADER)
         .then(response => {
           this.tableContents = response.data.entity.map(jsonString => JSON.parse(jsonString));
-          console.log(this.tableContents);
         })
         .catch(error => {
           console.log(error);
-        });
+        })
+        .finally(
+          delete HEADER.tableId
+        )
     },
   },
   mounted() {
