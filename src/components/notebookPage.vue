@@ -11,6 +11,9 @@
             <v-divider></v-divider>
             <v-card-text style="height: 300px">
               <v-container class="radio-button-list">
+                <div v-if="onLoading" style="text-align: center;">
+                  <v-progress-circular color="green" indeterminate size="62"></v-progress-circular>
+                </div>
                 <v-radio-group v-model="idDataTerpilih">
                   <v-radio v-for="pilihan in katalogData" :key="pilihan.id" :label="pilihan.judul" :value="pilihan.id">
                   </v-radio>
@@ -33,9 +36,9 @@
 
     <div class="ma pa">
       <div class="analisis-deskriptif">
-        <v-dialog v-model="dialog1" width="1024">
+        <v-dialog v-model="dialogDeskriptif" width="1024">
           <template v-slot:activator="{ props }">
-            <v-btn color="#43A047" v-bind="props" @click="openDialog(1)">Statistik Deskriptif</v-btn>
+            <v-btn color="#43A047" v-bind="props" @click="openDialog('Deskriptif')">Statistik Deskriptif</v-btn>
           </template>
           <v-card>
             <v-card-title>
@@ -194,10 +197,11 @@
       <v-sheet class="ma-2 pa-2 me-auto">
         <p>Hasil</p>
       </v-sheet>
-      <v-sheet class="ma-2 pa-2"><v-btn color="#43A047" @click = "downloadAsPDF()">
-      <v-sheet class="ma-2 pa-2"><v-btn color="#43A047" @click = "downloadAsPDF()">
+      <v-sheet class="ma-2 pa-2">
+        <v-btn color="#43A047" @click = "downloadAsPDF()">
           Unduh
-        </v-btn></v-sheet>
+        </v-btn>
+      </v-sheet>
     </v-sheet>
 
     <v-app class="box-output">
@@ -224,7 +228,7 @@
 </template>
 
 <script>
-import { API_ENDPOINT } from '@/others/config';
+import { API_ENDPOINT, BASE_NGROK_HEADER as HEADER } from '@/others/config';
 import axios from 'axios';
 import BarChartComponent from './BarChartComponent.vue';
 import ScatterPlotComponent from './ScatterPlotComponent.vue';
@@ -249,7 +253,8 @@ export default {
 
   data() {
     return {
-      dialog1: false,
+      onLoading: false,
+      dialogDeskriptif: false,
       dialog2: false,
       dialog3: false,
       dialogKolomInferensia: false,
@@ -291,25 +296,9 @@ export default {
     },
   },
   methods: {
-    downloadAsPDF() {
-      const elementToCapture = document.querySelector('.box-output'); 
-      html2canvas(elementToCapture).then(canvas => {
-        const imgData = canvas.toDataURL('image/png');
-
-        // Use jsPDF to create a PDF document
-        const pdf = new jsPDF('landscape');
-        const imgWidth = pdf.internal.pageSize.getWidth();
-        const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-        pdf.addImage(imgData, 'PNG', 10, 10, imgWidth - 20, imgHeight - 20);
-
-        // Download the PDF
-        pdf.save('visualization.pdf');
-      });
-    },
     tutupDialog() {
       this.tambahDataDialog = false;
-      this.dialog1 = false;
+      this.dialogDeskriptif = false;
       this.selectedColumns = [];
       this.selectedDescriptiveStats = [];
       this.selectedCharts = [];
@@ -318,11 +307,9 @@ export default {
 
     simpanDataDialog() {
       this.$emit('tableIdChanged', this.idDataTerpilih);
-      const headers = {
-        'ngrok-skip-browser-warning': 'true'
-      }
       this.tutupDialog();
-      axios.get(API_ENDPOINT + 'data/' + this.idDataTerpilih, { headers })
+
+      axios.get(API_ENDPOINT + 'data/' + this.idDataTerpilih, {headers: HEADER })
         .then(response => {
           this.headersArray = response.data.entity.headers;
 
@@ -337,13 +324,15 @@ export default {
         .catch(error => {
           console.error('Error fetching data:', error);
         });
+
       this.selectedColumns = [];
       this.selectedDescriptiveStats = [];
       this.selectedCharts = [];
       this.labelColumn = [];
     },
+
     pilihDeskriptif() {
-      this.dialog1 = false
+      this.dialogDeskriptif = false
       // Memeriksa apakah v-col sudah diisi
       if (!this.selectedColumns || this.selectedColumns.length === 0) {
         this.tampilkanAlert('Anda Belum Memilih Kolom');
@@ -499,10 +488,11 @@ export default {
       this.selectedCharts = [];
       this.dialogKolomVisualisasi = false;
     },
-    openDialog(dialogNumber) {
-      // Buka dialog sesuai dengan nomor dialog yang diberikan
-      this[`dialog${dialogNumber}`] = true;
+
+    openDialog(componentName) {
+      this[`dialog${componentName}`] = true;
     },
+
     openDialogKolomInferensia() {
       // Pastikan telah memilih uji statistik sebelum membuka dialog kolom
       if (!this.selectedTest || this.selectedTest.length === 0) {
@@ -533,42 +523,41 @@ export default {
       const elementToCapture = document.querySelector('.box-output'); 
       html2canvas(elementToCapture).then(canvas => {
         const imgData = canvas.toDataURL('image/png');
-
+        
         // Use jsPDF to create a PDF document
         const pdf = new jsPDF('landscape');
         const imgWidth = pdf.internal.pageSize.getWidth();
         const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
+        
         pdf.addImage(imgData, 'PNG', 10, 10, imgWidth - 20, imgHeight - 20);
-
+        
         // Download the PDF
         pdf.save('visualization.pdf');
       });
     },
   },
+
   mounted() {
-    
-    const katalogDataRequest = {
-      'ngrok-skip-browser-warning': 'true'
-    }
-    
+    this.onLoading = true;
+    axios.post(API_ENDPOINT + 'data/katalog', { headers : HEADER })
+    .then(response => {
+      const parsedData = response.data.entity.map(jsonString => JSON.parse(jsonString));
+      const sortedData = parsedData.sort((a, b) => {
+        const titleA = a.judul.toLowerCase();
+        const titleB = b.judul.toLowerCase();
 
-    axios.post(API_ENDPOINT + 'data/katalog', katalogDataRequest)
-      .then(response => {
-        const parsedData = response.data.entity.map(jsonString => JSON.parse(jsonString));
-        const sortedData = parsedData.sort((a, b) => {
-          const titleA = a.judul.toLowerCase();
-          const titleB = b.judul.toLowerCase();
-
-          if (titleA < titleB) return -1;
-          if (titleA > titleB) return 1;
-          return 0;
-        });
-        this.katalogData = sortedData;
-      })
-      .catch(error => {
-        console.error('Error fetching katalog data:', error);
+        if (titleA < titleB) return -1;
+        if (titleA > titleB) return 1;
+        return 0;
       });
+      this.katalogData = sortedData;
+    })
+    .catch(error => {
+      console.error('Error fetching katalog data:', error);
+    })
+    .finally(() => {
+      this.onLoading = false;
+    });
   }
 }
 </script>
