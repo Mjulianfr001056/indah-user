@@ -2,11 +2,9 @@
   <v-sheet class="d-flex">
     <div class="ma pa me-auto">
       <div class="tambah-data">
+        <v-btn color="#43A047" @click="bukaDialog('tambahData')"> Tambahkan Data </v-btn>
         <v-dialog v-model="tambahDataDialog" scrollable width="auto">
-          <template v-slot:activator="{ props }">
-            <v-btn color="#43A047" v-bind="props"> Tambahkan Data </v-btn>
-          </template>
-          <v-card width="900px">
+          <v-card width="900px" style="padding:10px">
             <v-card-title>Pilih Data</v-card-title>
             <v-divider></v-divider>
             <v-card-text style="height: 300px">
@@ -25,7 +23,7 @@
               <v-btn color="blue-darken-1" variant="text" @click="tutupDialog('tambahData')">
                 Tutup
               </v-btn>
-              <v-btn color="blue-darken-1" variant="text" @click="simpanDataDialog">
+              <v-btn color="blue-darken-1" variant="text" @click="pilihData">
                 Simpan
               </v-btn>
             </v-card-actions>
@@ -36,17 +34,17 @@
 
     <div class="ma pa">
       <div class="analisis-deskriptif">
+        <v-btn color="#43A047" @click="bukaDialog('deskriptif')">Statistik Deskriptif</v-btn>
         <v-dialog v-model="deskriptifDialog" width="1024">
-          <template v-slot:activator="{ props }">
-            <v-btn color="#43A047" v-bind="props" @click="openDialog('Deskriptif')">Statistik Deskriptif</v-btn>
-          </template>
-          <v-card>
+          <v-card style="padding:10px">
             <v-card-title>
               <span class="text-h5">Statistik Deskriptif</span>
             </v-card-title>
+            <v-divider></v-divider>
             <v-card-text>
               <v-container class="radio-button-list">
-                <v-alert v-model="showError" closable title="Terjadi error!" text="Silakan lengkapi kolom berikut sebelum melakukan analisis" type="error" variant="tonal"></v-alert>
+                <v-alert v-model="showError" closable title="Terjadi error!"
+                  text="Silakan lengkapi kolom berikut sebelum melakukan analisis" type="error" variant="tonal"></v-alert>
                 <br>
                 <v-row required>
                   <v-col cols="12" sm="6" required>
@@ -75,48 +73,47 @@
 
     <div class="ma pa">
       <div class="analisis-inferensia">
-        <!-- Tombol untuk membuka dialog pertama -->
-        <v-btn color="#43A047" v-bind="props" @click="openDialog(2)">Statistik Inferensia</v-btn>
-        <!-- Dialog Pertama: Memilih Uji Statistik -->
-        <v-dialog v-model="dialog2" width="600">
-          <v-card>
+        <v-btn color="#43A047" @click="bukaDialog('inferensia')">Statistik Inferensia</v-btn>
+        <v-dialog v-model="inferensiaDialog" width="600">
+          <v-card style="padding:10px">
             <v-card-title>
               <span class="text-h5">Pilih Uji Statistik Inferensia</span>
             </v-card-title>
+            <v-divider></v-divider>
             <v-card-text>
-              <v-container class="radio-button-list">
-                <v-radio-group v-model="selectedTest" column>
-                  <v-radio v-for="test in availableInfentialStats" :key="test" :label="test" :value="test"></v-radio>
-                </v-radio-group>
+              <v-container class="dropdown-container">
+                <v-select v-model="selectedInferential" :items="availableInfentialStats"
+                  label="Pilih uji statistik inferensia"></v-select>
               </v-container>
             </v-card-text>
             <v-card-actions class="justify-end">
-              <v-btn color="blue-darken-1" @click="tutupDialogInferensia">
+              <v-btn color="blue-grey-lighten-1" @click="tutupDialog('inferensia')">
                 Tutup
               </v-btn>
-              <v-btn color="blue-darken-1" @click="openDialogKolomInferensia">
-                Simpan
+              <v-btn variant="tonal" color="blue-darken-1" @click="alihDialog('inferensia', 'inferensiaLanjutan')">
+                Lanjut
               </v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
 
-        <!-- Dialog Kedua: Memilih Kolom -->
-        <v-dialog v-model="dialogKolomInferensia" width="600">
-          <v-card>
+        <v-dialog v-model="inferensiaLanjutanDialog" width="600">
+          <v-card style="padding:10px">
             <v-card-title>
               <span class="text-h5">Pilih Kolom</span>
             </v-card-title>
             <v-card-text>
+              <v-alert v-model="showError" closable title="Terjadi error!"
+                text="Silakan lengkapi kolom sebelum melakukan analisis!" type="error" variant="tonal"></v-alert>
+              <br>
               <v-checkbox class="checkbox-kolom" v-for="kolom in headersArray" :key="kolom" v-model="selectedColumns"
                 :label="kolom" :value="kolom" required multiple></v-checkbox>
             </v-card-text>
             <v-card-actions class="justify-end">
-              <v-btn color="blue-darken-1" variant="text" @click="tutupDialogInferensia">
-                Tutup
+              <v-btn color="blue-grey-lighten-1" @click="alihDialog('inferensiaLanjutan', 'inferensia')">
+                Balik
               </v-btn>
-              <!-- Tambahkan logika simpan jika diperlukan -->
-              <v-btn color="blue-darken-1" variant="text" @click="pilihInferensia">
+              <v-btn color="green-darken-1" variant="tonal" @click="pilihInferensia">
                 Simpan
               </v-btn>
             </v-card-actions>
@@ -128,7 +125,7 @@
     <div class="ma pa">
       <div class="visualisasi-data">
         <!-- Tombol untuk membuka dialog pertama -->
-        <v-btn color="#43A047" v-bind="props" @click="openDialog(3)">Visualisasi Data</v-btn>
+        <v-btn color="#43A047" v-bind="props" @click="bukaDialog(3)">Visualisasi Data</v-btn>
         <!-- Dialog Pertama: Memilih Chart -->
         <v-dialog v-model="dialog3" width="600">
           <v-card>
@@ -208,7 +205,7 @@
 
     <v-app class="box-output">
       <v-container>
-        <v-sheet :height="max - content" width="102%" border rounded class="box-hasil">
+        <v-sheet :height="auto" width="102%" border rounded class="box-hasil">
 
           <!-- Komponen Deskriptif -->
           <template v-for="(component, index) in descriptiveComponent">
@@ -257,24 +254,22 @@ export default {
     return {
       onLoading: false,
       showError: false,
+      tambahDataDialog: false,
       deskriptifDialog: false,
-      dialog2: false,
+      inferensiaDialog: false,
+      inferensiaLanjutanDialog: false,
       dialog3: false,
-      dialogKolomInferensia: false,
       dialogKolomVisualisasi: false,
       dialogm1: '',
-      tambahDataDialog: false,
       search: '',
       headersArray: [],
       dataHeaders: [],
       dataContents: [],
       katalogData: [],
       selectedColumns: null,
-      // filteredColumnsForAutocomplete: [],
-      // filteredColumnsForSelect: [],
       labelColumn: [],
       selectedDescriptiveStats: [],
-      selectedTest: [],
+      selectedInferential: [],
       selectedCharts: [],
       summaryEntity: [],
       availableInfentialStats: ['Paired t-test', 'Unpaired t-test', 'One Way Anova', 'Wilcoxon Rank Test', 'Mann Whitney U-test', 'Kruskal Wallis Test'],
@@ -290,7 +285,6 @@ export default {
     }
   },
   computed: {
-    // Buat computed property untuk menyaring pilihan yang sama
     filteredColumnsForSelect() {
       return this.headersArray.filter(item => !this.selectedColumns.includes(item));
     },
@@ -302,8 +296,8 @@ export default {
     clearInput() {
       this.selectedColumns = [];
       this.selectedDescriptiveStats = [];
+      this.selectedInferential = [];
       this.selectedCharts = [];
-      this.selectedTest = [];
       this.labelColumn = [];
     },
 
@@ -316,13 +310,22 @@ export default {
       return false;
     },
 
+    bukaDialog(componentName) {
+      this[`${componentName}Dialog`] = true;
+    },
+
     tutupDialog(componentName) {
       this.showError = false;
       this[`${componentName}Dialog`] = false;
       this.clearInput();
     },
 
-    simpanDataDialog() {
+    alihDialog(startComponent, endComponent) {
+      this[`${startComponent}Dialog`] = false;
+      this[`${endComponent}Dialog`] = true;
+    },
+
+    pilihData() {
       this.$emit('tableIdChanged', this.idDataTerpilih);
       this.tutupDialog('tambahData');
 
@@ -347,7 +350,7 @@ export default {
 
     pilihDeskriptif() {
       const validationResult = this.validateColumnSelection(this.selectedColumns, this.selectedDescriptiveStats);
-      
+
       if (validationResult) {
         this.showError = true;
         return;
@@ -374,33 +377,21 @@ export default {
       this.tutupDialog('deskriptif');
     },
 
-    tutupDialogInferensia() {
-      this.dialog2 = false;
-      this.dialogKolomInferensia = false;
-      this.selectedTest = [];
-      this.selectedColumns = [];
-    },
-    tutupDialogVisualisasi() {
-      this.dialog3 = false;
-      this.dialogKolomVisualisasi = false;
-      this.selectedCharts = [];
-      this.selectedColumns = [];
-    },
     pilihInferensia() {
-      // Memeriksa apakah Kolom sudah diisi
-      if (!this.selectedColumns || this.selectedColumns.length === 0) {
-        this.tampilkanAlert('Anda Belum Memilih Kolom');
+      const validationResult = this.validateColumnSelection(this.selectedColumns, this.selectedInferential);
+
+      if (validationResult) {
+        this.showError = true;
         return;
       }
 
       this.inferenceTobePassed = {
-        'ngrok-skip-browser-warning': 'true',
         tableId: this.idDataTerpilih,
         columnNames: this.selectedColumns,
-        inferenceMethod: this.selectedTest
+        inferenceMethod: this.selectedInferential
       }
 
-      switch (this.selectedTest) {
+      switch (this.selectedInferential) {
         // case "Paired t-test":
         //   this.inferenceComponent.push("PairedTTestComponent");
         //   break;
@@ -422,12 +413,9 @@ export default {
         default:
           break;
       }
-
-
-      this.selectedTest = [];
-      this.selectedColumns = [];
-      this.dialogKolomInferensia = false
+      this.tutupDialog('inferensiaLanjutan')
     },
+
     pilihVisualisasi() {
       this.dialog3 = false
       // Memeriksa apakah v-col sudah diisi
@@ -495,19 +483,6 @@ export default {
       this.dialogKolomVisualisasi = false;
     },
 
-    openDialog(componentName) {
-      this[`dialog${componentName}`] = true;
-    },
-
-    openDialogKolomInferensia() {
-      // Pastikan telah memilih uji statistik sebelum membuka dialog kolom
-      if (!this.selectedTest || this.selectedTest.length === 0) {
-        this.tampilkanAlert('Anda Belum Memilih Jenis Pengujian');
-        return;
-      }
-      this.dialog2 = false;
-      this.dialogKolomInferensia = true;
-    },
     openDialogKolomVisualisasi() {
       // Pastikan telah memilih uji statistik sebelum membuka dialog kolom
       if (!this.selectedCharts || this.selectedCharts.length === 0) {
@@ -517,10 +492,7 @@ export default {
       this.dialog3 = false;
       this.dialogKolomVisualisasi = true;
     },
-    closeDialog(dialogNumber) {
-      // Tutup dialog sesuai dengan nomor dialog yang diberikan
-      this[`dialog${dialogNumber}`] = false;
-    },
+
     tampilkanAlert(pesan) {
       // Metode untuk menampilkan alert
       alert(pesan);
