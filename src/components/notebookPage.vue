@@ -22,7 +22,7 @@
             </v-card-text>
             <v-divider></v-divider>
             <v-card-actions class="justify-end">
-              <v-btn color="blue-darken-1" variant="text" @click="tutupDialog">
+              <v-btn color="blue-darken-1" variant="text" @click="tutupDialog('tambahData')">
                 Tutup
               </v-btn>
               <v-btn color="blue-darken-1" variant="text" @click="simpanDataDialog">
@@ -296,18 +296,22 @@ export default {
     },
   },
   methods: {
-    tutupDialog() {
-      this.tambahDataDialog = false;
-      this.dialogDeskriptif = false;
+    clearInput(){
       this.selectedColumns = [];
       this.selectedDescriptiveStats = [];
       this.selectedCharts = [];
       this.selectedTest = [];
+      this.labelColumn = [];
+    },
+
+    tutupDialog(componentName) {
+      this[`${componentName}Dialog`] = false;
+      this.clearInput();
     },
 
     simpanDataDialog() {
       this.$emit('tableIdChanged', this.idDataTerpilih);
-      this.tutupDialog();
+      this.tutupDialog('tambahData');
 
       axios.get(API_ENDPOINT + 'data/' + this.idDataTerpilih, {headers: HEADER })
         .then(response => {
@@ -324,11 +328,8 @@ export default {
         .catch(error => {
           console.error('Error fetching data:', error);
         });
-
-      this.selectedColumns = [];
-      this.selectedDescriptiveStats = [];
-      this.selectedCharts = [];
-      this.labelColumn = [];
+      
+      this.clearInput();
     },
 
     pilihDeskriptif() {
