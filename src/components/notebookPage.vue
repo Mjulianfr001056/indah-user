@@ -106,8 +106,9 @@
               <v-alert v-model="showError" closable title="Terjadi error!"
                 text="Silakan lengkapi kolom sebelum melakukan analisis!" type="error" variant="tonal"></v-alert>
               <br>
-              <v-checkbox class="checkbox-kolom" v-for="kolom in headersArray" :key="kolom" v-model="selectedColumns"
-                :label="kolom" :value="kolom" required multiple></v-checkbox>
+              <v-container class="dropdown-container">
+                <v-select v-model="selectedColumns" :items="headersArray" label="Kolom" multiple></v-select>
+              </v-container>
             </v-card-text>
             <v-card-actions class="justify-end">
               <v-btn color="blue-grey-lighten-1" @click="alihDialog('inferensiaLanjutan', 'inferensia')">
@@ -214,7 +215,9 @@
           </template>
 
           <!-- Komponen Inferensia -->
-          <component :is="inferenceComponent" :passedInference="inferenceTobePassed" v-if="inferenceTobePassed" />
+          <template v-for="(component, index) in inferenceComponent">
+              <component :key="index" :is="component" :passedInference="inferenceTobePassed" v-if="inferenceTobePassed" />
+          </template>
 
           <!-- Komponen Visualisasi -->
           <template v-for="(chartComponent, index) in visualComponents">
@@ -256,8 +259,12 @@ export default {
       showError: false,
       tambahDataDialog: false,
       deskriptifDialog: false,
+      descriptiveComponent: [],
+
       inferensiaDialog: false,
       inferensiaLanjutanDialog: false,
+      inferenceComponent: [],
+
       dialog3: false,
       dialogKolomVisualisasi: false,
       dialogm1: '',
@@ -278,8 +285,6 @@ export default {
       visualComponents: [],
       chartComponents: ['BarChartComponent', 'ScatterPlotComponent', 'PieChartComponent', 'LineChartComponent'],
       dataTobePassed: null,
-      descriptiveComponent: [],
-      inferenceComponent: null,
       descriptiveTobePassed: null,
       inferenceTobePassed: null,
     }
@@ -399,7 +404,7 @@ export default {
         //   this.inferenceComponent.push("UnpairedTTestComponent");
         //   break;
         case "One Way Anova":
-          this.inferenceComponent = AnovaInferenceComponent
+          this.inferenceComponent.push("AnovaInferenceComponent");
           break;
         // case "Wilcoxon Rank Test":
         //   this.inferenceComponent.push("WilcoxonRankTestComponent");
@@ -413,6 +418,7 @@ export default {
         default:
           break;
       }
+
       this.tutupDialog('inferensiaLanjutan')
     },
 
