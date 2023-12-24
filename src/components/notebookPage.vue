@@ -90,18 +90,19 @@
               <v-btn color="blue-grey-lighten-1" @click="tutupDialog('inferensia')">
                 Tutup
               </v-btn>
-              <v-btn variant="tonal" color="blue-darken-1" @click="alihDialog('inferensia', 'inferensiaLanjutan')">
+              <v-btn variant="tonal" color="blue-darken-1" @click="navigasiInferensia">
                 Lanjut
               </v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
 
-        <v-dialog v-model="inferensiaLanjutanDialog" width="600">
+        <v-dialog v-model="anovaDialog" width="600">
           <v-card style="padding:10px">
             <v-card-title>
               <span class="text-h5">Pilih Kolom</span>
             </v-card-title>
+            <v-divider></v-divider>
             <v-card-text>
               <v-alert v-model="showError" closable title="Terjadi error!"
                 text="Silakan lengkapi kolom sebelum melakukan analisis!" type="error" variant="tonal"></v-alert>
@@ -111,7 +112,39 @@
               </v-container>
             </v-card-text>
             <v-card-actions class="justify-end">
-              <v-btn color="blue-grey-lighten-1" @click="alihDialog('inferensiaLanjutan', 'inferensia')">
+              <v-btn color="blue-grey-lighten-1" @click="alihDialog('anova', 'inferensia')">
+                Balik
+              </v-btn>
+              <v-btn color="green-darken-1" variant="tonal" @click="pilihInferensia">
+                Simpan
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+
+        <v-dialog v-model="pairedTTestDialog" width="600">
+          <v-card style="padding:10px">
+            <v-card-title>
+              <span class="text-h5">Pilih Kolom</span>
+            </v-card-title>
+            <v-divider></v-divider>
+            <v-card-text>
+              <v-alert v-model="showError" closable title="Terjadi error!"
+                text="Gagal melakukan perhitungan, pastikan kolom telah terisi dan tidak sama" type="error" variant="tonal"></v-alert>
+              <br>
+              <v-container class="dropdown-container">
+                <v-row required>
+                  <v-col cols="12" sm="6" required>
+                    <v-select v-model="sampelPertama" :items=headersArray label="Sampel 1" required></v-select>
+                  </v-col>
+                  <v-col cols="12" sm="6" required>
+                    <v-select v-model="sampelKedua" :items=headersArray label="Sampel 2" required></v-select>
+                  </v-col>
+                </v-row>
+              </v-container>
+            </v-card-text>
+            <v-card-actions class="justify-end">
+              <v-btn color="blue-grey-lighten-1" @click="alihDialog('pairedTTest', 'inferensia')">
                 Balik
               </v-btn>
               <v-btn color="green-darken-1" variant="tonal" @click="pilihInferensia">
@@ -233,7 +266,7 @@
           Hapus
         </v-btn>
         <v-divider class="mx-1" vertical></v-divider>
-        <v-btn :loading="onLoading" color="#43A047" @click="downloadAsPDF()">
+        <v-btn :loading="onDownload" color="#43A047" @click="downloadAsPDF()">
           Unduh
         </v-btn>
       </v-sheet>
@@ -275,6 +308,7 @@ import {
 } from './visualization';
 
 import AnovaInferenceComponent from './inference/AnovaInferenceComponent.vue';
+import PairedTTestComponent from './inference/PairedTTestComponent.vue';
 import SummaryDescriptiveComponent from './descriptive/SummaryDescriptiveComponent.vue';
 import CorrelationDescriptiveComponent from './descriptive/CorrelationDescriptiveComponent.vue';
 import jsPDF from 'jspdf';
@@ -288,12 +322,14 @@ export default {
     LineChartComponent,
     AnovaInferenceComponent,
     SummaryDescriptiveComponent,
-    CorrelationDescriptiveComponent
+    CorrelationDescriptiveComponent,
+    PairedTTestComponent
   },
 
   data() {
     return {
       onLoading: false,
+      onDownload: false,
       showError: false,
       katalogData: [],
       tableHeaders: [],
@@ -310,11 +346,14 @@ export default {
       descriptiveComponent: [],
 
       inferensiaDialog: false,
-      inferensiaLanjutanDialog: false,
-      availableInfentialStats: ['Paired t-test', 'Unpaired t-test', 'One Way Anova', 'Wilcoxon Rank Test', 'Mann Whitney U-test', 'Kruskal Wallis Test'],
+      anovaDialog: false,
+      pairedTTestDialog: false,
+      availableInfentialStats: ['Paired t-test', 'Unpaired t-test', 'One Way Anova', 'Wilcoxon Rank Test', 'Mann Whitney U-test'],
       selectedInferential: [],
       inferenceTobePassed: null,
       inferenceComponent: [],
+      sampelPertama: null,
+      sampelKedua: null,
 
       visualisasiDialog: false,
       visualisasiLanjutanDialog: false,
@@ -347,6 +386,8 @@ export default {
       this.selectedChart = [];
       this.labelColumn = [];
       this.selectedRows = [];
+      this.sampelPertama = null;
+      this.sampelKedua = null;
     },
 
     clearOutput() {
@@ -384,6 +425,20 @@ export default {
         this.alihDialog('visualisasi', 'visualisasiLineChart');
       } else {
         this.alihDialog('visualisasi', 'visualisasiLanjutan');
+      }
+    },
+
+    navigasiInferensia() {
+      switch (this.selectedInferential) {
+        case "Paired t-test":
+          this.alihDialog('inferensia', 'pairedTTest');
+          break;
+        case "One Way Anova":
+          this.alihDialog('inferensia', 'anova');
+          break;
+        default:
+          this.alihDialog('inferensia', 'anova');
+          break;
       }
     },
 
@@ -459,28 +514,39 @@ export default {
     },
 
     pilihInferensia() {
-      const validationResult = this.validateColumnSelection(this.selectedColumns, this.selectedInferential);
+      let validationResult = false;
+      if (this.selectedInferential === "Paired t-test") {
+        validationResult = this.sampelPertama === this.sampelKedua;
+      } else {
+        validationResult = this.validateColumnSelection(this.selectedColumns, this.selectedInferential);
+      }
 
       if (validationResult) {
         this.showError = true;
         return;
       }
 
-      this.inferenceTobePassed = {
-        tableId: this.idDataTerpilih,
-        columnNames: this.selectedColumns,
-        inferenceMethod: this.selectedInferential
-      }
-
       switch (this.selectedInferential) {
-        // case "Paired t-test":
-        //   this.inferenceComponent.push("PairedTTestComponent");
-        //   break;
+        case "Paired t-test":
+          this.inferenceComponent.push("PairedTTestComponent");
+          this.inferenceTobePassed = {
+            tableId: this.idDataTerpilih,
+            columnNames: [this.sampelPertama, this.sampelKedua],
+            inferenceMethod: this.selectedInferential
+          }
+          this.tutupDialog('pairedTTest');
+          break;
         // case "Unpaired t-test":
         //   this.inferenceComponent.push("UnpairedTTestComponent");
         //   break;
         case "One Way Anova":
           this.inferenceComponent.push("AnovaInferenceComponent");
+          this.inferenceTobePassed = {
+            tableId: this.idDataTerpilih,
+            columnNames: this.selectedColumns,
+            inferenceMethod: this.selectedInferential
+          }
+          this.tutupDialog('anova');
           break;
         // case "Wilcoxon Rank Test":
         //   this.inferenceComponent.push("WilcoxonRankTestComponent");
@@ -488,21 +554,16 @@ export default {
         // case "Mann Whitney U-test":
         //   this.inferenceComponent.push("MannWhitneyUtestComponent");
         //   break;
-        // case "Kruskal Wallis Test":
-        //   this.inferenceComponent.push("KruskalWallisTestComponent");
-        //   break;
         default:
           break;
       }
-
-      this.tutupDialog('inferensiaLanjutan')
     },
 
     pilihVisualisasi(priorActivity) {
       let validationResult = false;
       if (priorActivity === "lineChart") {
         validationResult = this.validateColumnSelection(this.selectedChart, this.selectedRows);
-        
+
         this.dataTobePassed = {
           tableId: this.idDataTerpilih,
           rowNames: this.selectedRows,
@@ -545,7 +606,7 @@ export default {
     },
 
     downloadAsPDF() {
-      this.onLoading = true;
+      this.onDownload = true;
       const elementToCapture = document.querySelector('.box-output');
       html2canvas(elementToCapture).then(canvas => {
         const imgData = canvas.toDataURL('image/png');
@@ -557,7 +618,7 @@ export default {
         pdf.addImage(imgData, 'PNG', 10, 10, imgWidth - 20, imgHeight - 20);
 
         pdf.save('visualization.pdf');
-        this.onLoading = false;
+        this.onDownload = false;
       });
     },
   },
