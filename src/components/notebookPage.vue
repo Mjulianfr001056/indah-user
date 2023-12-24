@@ -153,6 +153,35 @@
             </v-card-actions>
           </v-card>
         </v-dialog>
+
+        <v-dialog v-model="tTestDialog" width="600">
+          <v-card style="padding:10px">
+            <v-card-title>
+              <span class="text-h5">Pilih Kolom</span>
+            </v-card-title>
+            <v-divider></v-divider>
+            <v-card-text>
+              <v-alert v-model="showError" closable title="Terjadi error!"
+                text="Gagal melakukan perhitungan, pastikan telah memilih sampel dan xbar numerik" type="error" variant="tonal"></v-alert>
+              <br>
+              <v-container class="dropdown-container">
+                <v-col required>
+                  <v-select v-model="sampelPertama" :items=headersArray label="Kolom Sampel" required></v-select>
+                  <v-select v-model="alternative" :items="['LESS', 'GREATER', 'TWO_SIDED']" label="Alternatif" required></v-select>
+                  <v-text-field v-model="xbar" label="Nilai xbar" required></v-text-field>
+                </v-col>
+              </v-container>
+            </v-card-text>
+            <v-card-actions class="justify-end">
+              <v-btn color="blue-grey-lighten-1" @click="alihDialog('tTest', 'inferensia')">
+                Balik
+              </v-btn>
+              <v-btn color="green-darken-1" variant="tonal" @click="pilihInferensia">
+                Simpan
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
       </div>
     </div>
 
@@ -309,6 +338,7 @@ import {
 
 import AnovaInferenceComponent from './inference/AnovaInferenceComponent.vue';
 import PairedTTestComponent from './inference/PairedTTestComponent.vue';
+import UnpairedTTestComponent from './inference/UnpairedTTestComponent.vue';
 import SummaryDescriptiveComponent from './descriptive/SummaryDescriptiveComponent.vue';
 import CorrelationDescriptiveComponent from './descriptive/CorrelationDescriptiveComponent.vue';
 import jsPDF from 'jspdf';
@@ -323,7 +353,8 @@ export default {
     AnovaInferenceComponent,
     SummaryDescriptiveComponent,
     CorrelationDescriptiveComponent,
-    PairedTTestComponent
+    PairedTTestComponent,
+    UnpairedTTestComponent
   },
 
   data() {
@@ -348,12 +379,15 @@ export default {
       inferensiaDialog: false,
       anovaDialog: false,
       pairedTTestDialog: false,
+      tTestDialog: false,
       availableInfentialStats: ['Paired t-test', 'Unpaired t-test', 'One Way Anova', 'Wilcoxon Rank Test', 'Mann Whitney U-test'],
       selectedInferential: [],
       inferenceTobePassed: null,
       inferenceComponent: [],
       sampelPertama: null,
       sampelKedua: null,
+      alternative: "TWO_SIDED",
+      xbar: 0,
 
       visualisasiDialog: false,
       visualisasiLanjutanDialog: false,
@@ -388,6 +422,8 @@ export default {
       this.selectedRows = [];
       this.sampelPertama = null;
       this.sampelKedua = null;
+      this.alternative = "TWO_SIDED";
+      this.xbar = 0;
     },
 
     clearOutput() {
@@ -432,6 +468,9 @@ export default {
       switch (this.selectedInferential) {
         case "Paired t-test":
           this.alihDialog('inferensia', 'pairedTTest');
+          break;
+        case "Unpaired t-test":
+          this.alihDialog('inferensia', 'tTest');
           break;
         case "One Way Anova":
           this.alihDialog('inferensia', 'anova');
@@ -517,6 +556,8 @@ export default {
       let validationResult = false;
       if (this.selectedInferential === "Paired t-test") {
         validationResult = this.sampelPertama === this.sampelKedua;
+      }else if(this.selectedInferential === "Unpaired t-test"){
+        validationResult = this.sampelPertama === null || !/^[0-9.]+$/.test(this.xbar);
       } else {
         validationResult = this.validateColumnSelection(this.selectedColumns, this.selectedInferential);
       }
@@ -532,19 +573,24 @@ export default {
           this.inferenceTobePassed = {
             tableId: this.idDataTerpilih,
             columnNames: [this.sampelPertama, this.sampelKedua],
-            inferenceMethod: this.selectedInferential
           }
           this.tutupDialog('pairedTTest');
           break;
-        // case "Unpaired t-test":
-        //   this.inferenceComponent.push("UnpairedTTestComponent");
-        //   break;
+        case "Unpaired t-test":
+          this.inferenceComponent.push("UnpairedTTestComponent");
+          this.inferenceTobePassed = {
+            tableId: this.idDataTerpilih,
+            columnNames: this.sampelPertama,
+            alternative: this.alternative,
+            mu: this.xbar
+          }
+          this.tutupDialog('tTest');
+          break;
         case "One Way Anova":
           this.inferenceComponent.push("AnovaInferenceComponent");
           this.inferenceTobePassed = {
             tableId: this.idDataTerpilih,
             columnNames: this.selectedColumns,
-            inferenceMethod: this.selectedInferential
           }
           this.tutupDialog('anova');
           break;
@@ -593,6 +639,7 @@ export default {
           break;
         case 'Line Chart':
           this.visualComponents.push("LineChartComponent");
+          this.tutupDialog('visualisasiLineChart');
           break;
         case 'Scatter Plot':
           this.visualComponents.push("ScatterPlotComponent");
@@ -601,7 +648,6 @@ export default {
           break;
       }
 
-      this.tutupDialog('visualisasiLineChart');
       this.tutupDialog('visualisasiLanjutan');
     },
 
