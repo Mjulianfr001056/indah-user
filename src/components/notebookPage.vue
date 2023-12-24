@@ -182,6 +182,38 @@
             </v-card-actions>
           </v-card>
         </v-dialog>
+
+        <v-dialog v-model="wilcoxonDialog" width="600">
+          <v-card style="padding:10px">
+            <v-card-title>
+              <span class="text-h5">Pilih Kolom</span>
+            </v-card-title>
+            <v-divider></v-divider>
+            <v-card-text>
+              <v-alert v-model="showError" closable title="Terjadi error!"
+                text="Gagal melakukan perhitungan, pastikan kolom telah terisi dan tidak sama" type="error" variant="tonal"></v-alert>
+              <br>
+              <v-container class="dropdown-container">
+                <v-row required>
+                  <v-col cols="12" sm="6" required>
+                    <v-select v-model="sampelPertama" :items=headersArray label="Sampel 1" required></v-select>
+                  </v-col>
+                  <v-col cols="12" sm="6" required>
+                    <v-select v-model="sampelKedua" :items=headersArray label="Sampel 2" required></v-select>
+                  </v-col>
+                </v-row>
+              </v-container>
+            </v-card-text>
+            <v-card-actions class="justify-end">
+              <v-btn color="blue-grey-lighten-1" @click="alihDialog('wilcoxon', 'inferensia')">
+                Balik
+              </v-btn>
+              <v-btn color="green-darken-1" variant="tonal" @click="pilihInferensia">
+                Simpan
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
       </div>
     </div>
 
@@ -339,6 +371,7 @@ import {
 import AnovaInferenceComponent from './inference/AnovaInferenceComponent.vue';
 import PairedTTestComponent from './inference/PairedTTestComponent.vue';
 import UnpairedTTestComponent from './inference/UnpairedTTestComponent.vue';
+import WilcoxonRankTestComponent from './inference/WilcoxonRankTestComponent.vue';
 import SummaryDescriptiveComponent from './descriptive/SummaryDescriptiveComponent.vue';
 import CorrelationDescriptiveComponent from './descriptive/CorrelationDescriptiveComponent.vue';
 import jsPDF from 'jspdf';
@@ -354,7 +387,8 @@ export default {
     SummaryDescriptiveComponent,
     CorrelationDescriptiveComponent,
     PairedTTestComponent,
-    UnpairedTTestComponent
+    UnpairedTTestComponent,
+    WilcoxonRankTestComponent,
   },
 
   data() {
@@ -380,6 +414,7 @@ export default {
       anovaDialog: false,
       pairedTTestDialog: false,
       tTestDialog: false,
+      wilcoxonDialog: false,
       availableInfentialStats: ['Paired t-test', 'Unpaired t-test', 'One Way Anova', 'Wilcoxon Rank Test', 'Mann Whitney U-test'],
       selectedInferential: [],
       inferenceTobePassed: null,
@@ -475,6 +510,9 @@ export default {
         case "One Way Anova":
           this.alihDialog('inferensia', 'anova');
           break;
+        case "Wilcoxon Rank Test":
+          this.alihDialog('inferensia', 'wilcoxon');
+          break;
         default:
           this.alihDialog('inferensia', 'anova');
           break;
@@ -554,7 +592,7 @@ export default {
 
     pilihInferensia() {
       let validationResult = false;
-      if (this.selectedInferential === "Paired t-test") {
+      if (this.selectedInferential === "Paired t-test" || this.selectedInferential === "Wilcoxon Rank Test" || this.selectedInferential === "Mann Whitney U-test") {
         validationResult = this.sampelPertama === this.sampelKedua;
       }else if(this.selectedInferential === "Unpaired t-test"){
         validationResult = this.sampelPertama === null || !/^[0-9.]+$/.test(this.xbar);
@@ -594,9 +632,14 @@ export default {
           }
           this.tutupDialog('anova');
           break;
-        // case "Wilcoxon Rank Test":
-        //   this.inferenceComponent.push("WilcoxonRankTestComponent");
-        //   break;
+        case "Wilcoxon Rank Test":
+          this.inferenceComponent.push("WilcoxonRankTestComponent");
+          this.inferenceTobePassed = {
+            tableId: this.idDataTerpilih,
+            columnNames: [this.sampelPertama, this.sampelKedua]
+          }
+          this.tutupDialog('wilcoxon');
+          break;
         // case "Mann Whitney U-test":
         //   this.inferenceComponent.push("MannWhitneyUtestComponent");
         //   break;
