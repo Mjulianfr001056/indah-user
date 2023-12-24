@@ -130,7 +130,8 @@
             <v-divider></v-divider>
             <v-card-text>
               <v-alert v-model="showError" closable title="Terjadi error!"
-                text="Gagal melakukan perhitungan, pastikan kolom telah terisi dan tidak sama" type="error" variant="tonal"></v-alert>
+                text="Gagal melakukan perhitungan, pastikan kolom telah terisi dan tidak sama" type="error"
+                variant="tonal"></v-alert>
               <br>
               <v-container class="dropdown-container">
                 <v-row required>
@@ -162,12 +163,14 @@
             <v-divider></v-divider>
             <v-card-text>
               <v-alert v-model="showError" closable title="Terjadi error!"
-                text="Gagal melakukan perhitungan, pastikan telah memilih sampel dan xbar numerik" type="error" variant="tonal"></v-alert>
+                text="Gagal melakukan perhitungan, pastikan telah memilih sampel dan xbar numerik" type="error"
+                variant="tonal"></v-alert>
               <br>
               <v-container class="dropdown-container">
                 <v-col required>
                   <v-select v-model="sampelPertama" :items=headersArray label="Kolom Sampel" required></v-select>
-                  <v-select v-model="alternative" :items="['LESS', 'GREATER', 'TWO_SIDED']" label="Alternatif" required></v-select>
+                  <v-select v-model="alternative" :items="['LESS', 'GREATER', 'TWO_SIDED']" label="Alternatif"
+                    required></v-select>
                   <v-text-field v-model="xbar" label="Nilai xbar" required></v-text-field>
                 </v-col>
               </v-container>
@@ -191,7 +194,8 @@
             <v-divider></v-divider>
             <v-card-text>
               <v-alert v-model="showError" closable title="Terjadi error!"
-                text="Gagal melakukan perhitungan, pastikan kolom telah terisi dan tidak sama" type="error" variant="tonal"></v-alert>
+                text="Gagal melakukan perhitungan, pastikan kolom telah terisi dan tidak sama" type="error"
+                variant="tonal"></v-alert>
               <br>
               <v-container class="dropdown-container">
                 <v-row required>
@@ -206,6 +210,39 @@
             </v-card-text>
             <v-card-actions class="justify-end">
               <v-btn color="blue-grey-lighten-1" @click="alihDialog('wilcoxon', 'inferensia')">
+                Balik
+              </v-btn>
+              <v-btn color="green-darken-1" variant="tonal" @click="pilihInferensia">
+                Simpan
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+
+        <v-dialog v-model="mannWhitneyDialog" width="600">
+          <v-card style="padding:10px">
+            <v-card-title>
+              <span class="text-h5">Pilih Kolom</span>
+            </v-card-title>
+            <v-divider></v-divider>
+            <v-card-text>
+              <v-alert v-model="showError" closable title="Terjadi error!"
+                text="Gagal melakukan perhitungan, pastikan kolom telah terisi dan tidak sama" type="error"
+                variant="tonal"></v-alert>
+              <br>
+              <v-container class="dropdown-container">
+                <v-row required>
+                  <v-col cols="12" sm="6" required>
+                    <v-select v-model="sampelPertama" :items=headersArray label="Sampel 1" required></v-select>
+                  </v-col>
+                  <v-col cols="12" sm="6" required>
+                    <v-select v-model="sampelKedua" :items=headersArray label="Sampel 2" required></v-select>
+                  </v-col>
+                </v-row>
+              </v-container>
+            </v-card-text>
+            <v-card-actions class="justify-end">
+              <v-btn color="blue-grey-lighten-1" @click="alihDialog('mannWhitney', 'inferensia')">
                 Balik
               </v-btn>
               <v-btn color="green-darken-1" variant="tonal" @click="pilihInferensia">
@@ -372,6 +409,7 @@ import AnovaInferenceComponent from './inference/AnovaInferenceComponent.vue';
 import PairedTTestComponent from './inference/PairedTTestComponent.vue';
 import UnpairedTTestComponent from './inference/UnpairedTTestComponent.vue';
 import WilcoxonRankTestComponent from './inference/WilcoxonRankTestComponent.vue';
+import MannWhitneyUTestComponent from './inference/MannWhitneyUTestComponent.vue';
 import SummaryDescriptiveComponent from './descriptive/SummaryDescriptiveComponent.vue';
 import CorrelationDescriptiveComponent from './descriptive/CorrelationDescriptiveComponent.vue';
 import jsPDF from 'jspdf';
@@ -389,6 +427,7 @@ export default {
     PairedTTestComponent,
     UnpairedTTestComponent,
     WilcoxonRankTestComponent,
+    MannWhitneyUTestComponent,
   },
 
   data() {
@@ -415,6 +454,7 @@ export default {
       pairedTTestDialog: false,
       tTestDialog: false,
       wilcoxonDialog: false,
+      mannWhitneyDialog: false,
       availableInfentialStats: ['Paired t-test', 'Unpaired t-test', 'One Way Anova', 'Wilcoxon Rank Test', 'Mann Whitney U-test'],
       selectedInferential: [],
       inferenceTobePassed: null,
@@ -513,6 +553,9 @@ export default {
         case "Wilcoxon Rank Test":
           this.alihDialog('inferensia', 'wilcoxon');
           break;
+        case "Mann Whitney U-test":
+          this.alihDialog('inferensia', 'mannWhitney');
+          break;
         default:
           this.alihDialog('inferensia', 'anova');
           break;
@@ -594,7 +637,7 @@ export default {
       let validationResult = false;
       if (this.selectedInferential === "Paired t-test" || this.selectedInferential === "Wilcoxon Rank Test" || this.selectedInferential === "Mann Whitney U-test") {
         validationResult = this.sampelPertama === this.sampelKedua;
-      }else if(this.selectedInferential === "Unpaired t-test"){
+      } else if (this.selectedInferential === "Unpaired t-test") {
         validationResult = this.sampelPertama === null || !/^[0-9.]+$/.test(this.xbar);
       } else {
         validationResult = this.validateColumnSelection(this.selectedColumns, this.selectedInferential);
@@ -640,9 +683,14 @@ export default {
           }
           this.tutupDialog('wilcoxon');
           break;
-        // case "Mann Whitney U-test":
-        //   this.inferenceComponent.push("MannWhitneyUtestComponent");
-        //   break;
+        case "Mann Whitney U-test":
+          this.inferenceComponent.push("MannWhitneyUTestComponent");
+          this.inferenceTobePassed = {
+            tableId: this.idDataTerpilih,
+            columnNames: [this.sampelPertama, this.sampelKedua]
+          }
+          this.tutupDialog('mannWhitney');
+          break;
         default:
           break;
       }
@@ -781,5 +829,4 @@ td {
 
 /* .box-output{
   margin-left: 2%;
-} */
-</style>
+} */</style>
