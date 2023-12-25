@@ -531,7 +531,6 @@ export default {
 
   methods: {
     clearInput() {
-      this.idDataTerpilih = null;
       this.selectedColumns = [];
       this.selectedDescriptiveStats = [];
       this.selectedInferential = [];
