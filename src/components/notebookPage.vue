@@ -9,11 +9,15 @@
             <v-divider></v-divider>
             <v-card-text style="height: 300px">
               <v-container class="radio-button-list">
+                <v-alert v-model="showError" closable title="Terjadi error!" text="Silakan pilih salah satu data!"
+                  type="error" variant="tonal"></v-alert>
+                <br>
                 <div v-if="onLoading" style="text-align: center;">
                   <v-progress-circular color="green" indeterminate size="62"></v-progress-circular>
                 </div>
                 <v-radio-group v-model="idDataTerpilih">
-                  <v-radio v-for="pilihan in katalogData" :key="pilihan.id" :label="pilihan.judul" :value="pilihan.id">
+                  <v-radio v-for="pilihan in katalogData" :key="pilihan.id" :label="pilihan.judul" :value="pilihan.id"
+                    :class="{ 'text-granted': pilihan.status === 'GRANTED', 'text-prohibited': pilihan.status === 'PROHIBITED' }">
                   </v-radio>
                 </v-radio-group>
               </v-container>
@@ -23,8 +27,44 @@
               <v-btn color="blue-grey-lighten-1" variant="text" @click="tutupDialog('tambahData')">
                 Tutup
               </v-btn>
-              <v-btn color="green-darken-1" variant="tonal" @click="pilihData">
+              <v-btn color="green-darken-1" variant="tonal" @click="validasiAkses">
                 Simpan
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+
+        <v-dialog v-model="requestDataDialog" width="auto">
+          <v-card width="900px" style="padding:10px">
+            <v-card-title>Gagal membuka!</v-card-title>
+            <v-divider></v-divider>
+            <v-card-text style="height: 300px">
+              <p>Anda belum memiliki akses ke data ini!</p>
+              <p>Apakah anda ingin mengajukan permintaan penggunaan data sekarang?</p>
+            </v-card-text>
+            <v-divider></v-divider>
+            <v-card-actions class="justify-end">
+              <v-btn color="blue-grey-lighten-1" variant="text" @click="tutupDialog('requestData')">
+                Tutup
+              </v-btn>
+              <v-btn color="green-darken-1" variant="tonal" @click="ajukanAkses">
+                Ajukan
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+
+        <v-dialog v-model="confirmDataDialog" width="auto">
+          <v-card width="900px" style="padding:10px">
+            <v-card-title>Sukses!</v-card-title>
+            <v-divider></v-divider>
+            <v-card-text style="height: 300px">
+              <p>Data berhasil diajukan!</p>
+            </v-card-text>
+            <v-divider></v-divider>
+            <v-card-actions class="justify-end">
+              <v-btn color="blue-grey-lighten-1" variant="tonal" @click="tutupDialog('confirmData')">
+                Tutup
               </v-btn>
             </v-card-actions>
           </v-card>
@@ -442,6 +482,8 @@ export default {
       search: '',
       headersArray: [],
       tambahDataDialog: false,
+      requestDataDialog: false,
+      confirmDataDialog: false,
       idDataTerpilih: null,
 
       deskriptifDialog: false,
@@ -489,6 +531,7 @@ export default {
 
   methods: {
     clearInput() {
+      this.idDataTerpilih = null;
       this.selectedColumns = [];
       this.selectedDescriptiveStats = [];
       this.selectedInferential = [];
@@ -514,6 +557,39 @@ export default {
         }
       }
       return false;
+    },
+
+    validasiAkses() {
+      if (!this.idDataTerpilih) {
+        this.showError = true;
+        return;
+      }
+
+      const selectedPilihan = this.katalogData.find((pilihan) => pilihan.id === this.idDataTerpilih);
+
+      if (selectedPilihan.status === 'PROHIBITED') {
+        this.alihDialog('tambahData', 'requestData');
+        return;
+      } else {
+        console.log(this.idDataTerpilih)
+        this.pilihData();
+        this.tutupDialog('tambahData');
+      }
+    },
+
+    ajukanAkses() {
+      HEADER['tableId'] = this.idDataTerpilih;
+      HEADER['userId'] = "102";
+
+      axios.post(API_ENDPOINT + 'data/request', HEADER)
+        .catch(error => {
+          console.error('Error request data:', error);
+        })
+        .finally(
+          delete HEADER['tableId'],
+          delete HEADER['userId'],
+          this.alihDialog('requestData', 'confirmData')
+        );
     },
 
     bukaDialog(componentName) {
@@ -583,7 +659,6 @@ export default {
 
     pilihData() {
       this.$emit('tableIdChanged', this.idDataTerpilih);
-      this.tutupDialog('tambahData');
 
       axios.get(API_ENDPOINT + 'data/' + this.idDataTerpilih, { headers: HEADER })
         .then(response => {
@@ -762,10 +837,17 @@ export default {
 
   mounted() {
     this.onLoading = true;
-    axios.post(API_ENDPOINT + 'data/katalog', { headers: HEADER })
+    HEADER['userId'] = "102"
+    axios.post(API_ENDPOINT + 'data/katalog', HEADER)
       .then(response => {
         const parsedData = response.data.entity.map(jsonString => JSON.parse(jsonString));
         const sortedData = parsedData.sort((a, b) => {
+          const statusOrder = getStatusOrder(a.status) - getStatusOrder(b.status);
+
+          if (statusOrder !== 0) {
+            return statusOrder;
+          }
+
           const titleA = a.judul.toLowerCase();
           const titleB = b.judul.toLowerCase();
 
@@ -773,13 +855,27 @@ export default {
           if (titleA > titleB) return 1;
           return 0;
         });
+
+        function getStatusOrder(status) {
+          switch (status) {
+            case 'GRANTED':
+              return 1;
+            case 'PROHIBITED':
+              return 2;
+            default:
+              return 0;
+          }
+        }
+
         this.katalogData = sortedData;
+        console.log(this.katalogData);
       })
       .catch(error => {
         console.error('Error fetching katalog data:', error);
       })
       .finally(() => {
         this.onLoading = false;
+        delete HEADER['userId'];
       });
   }
 }
@@ -827,6 +923,15 @@ td {
   line-height: 2rem;
 }
 
+.text-granted {
+  color: #000000;
+}
+
+.text-prohibited {
+  color: #9a9999;
+}
+
 /* .box-output{
   margin-left: 2%;
-} */</style>
+} */
+</style>
