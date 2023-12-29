@@ -45,6 +45,9 @@
 </template>
 
 <script>
+import axios from 'axios'
+import { API_ENDPOINT, BASE_NGROK_HEADER as HEADER } from '@/others/config';
+
 export default {
     name: 'AnovaInferenceComponent',
     props: {
@@ -76,7 +79,45 @@ export default {
         }
     },
     mounted() {
+        HEADER['tableId'] = this.passedInference['tableId'];
+        HEADER['columnNames'] = this.passedInference['columnNames'];
+        HEADER['inferenceType'] = this.passedInference['inferenceType'];
 
+        axios.post(API_ENDPOINT + 'inference/anova', HEADER)
+            .then(response => {
+                const result = response.data.entity;
+                const parsedResult = JSON.parse(result);
+
+                parsedResult.betweenGroups.P = parsedResult.betweenGroups.P.toFixed(3);
+
+
+                function formatNumber(number) {
+                    return !isNaN(Number(number)) && number % 1 !== 0
+                        ? Number(number).toFixed(2)
+                        : number;
+                }
+
+                this.anovaResult.betweenGroups.SS = formatNumber(parsedResult.betweenGroups.SS);
+                this.anovaResult.betweenGroups.df = formatNumber(parsedResult.betweenGroups.df);
+                this.anovaResult.betweenGroups.MS = formatNumber(parsedResult.betweenGroups.MS);
+                this.anovaResult.betweenGroups.F = formatNumber(parsedResult.betweenGroups.F);
+                this.anovaResult.betweenGroups.P = parsedResult.betweenGroups.P;
+
+                this.anovaResult.withinGroups.SS = formatNumber(parsedResult.withinGroups.SS);
+                this.anovaResult.withinGroups.df = formatNumber(parsedResult.withinGroups.df);
+                this.anovaResult.withinGroups.MS = formatNumber(parsedResult.withinGroups.MS);
+
+                this.anovaResult.total.SS = formatNumber(parsedResult.total.SS);
+                this.anovaResult.total.df = formatNumber(parsedResult.total.df);
+            })
+            .catch(error => {
+                console.log(error);
+            })
+            .finally(() => {
+                delete HEADER['inferenceType'];
+                delete HEADER['tableId'];
+                delete HEADER['columnNames'];
+            })
     }
 }
 </script>
@@ -102,6 +143,10 @@ export default {
     padding: 0.75rem;
     vertical-align: top;
     border-top: 1px solid #dee2e6;
+}
+
+.table td:not(:first-child) {
+    text-align: center;
 }
 
 .table thead th {

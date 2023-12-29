@@ -8,7 +8,7 @@
     <v-card-text>
       <v-window v-model="tab">
         <v-window-item value="notebook">
-          <notebook @tableIdChanged="handleTableIdChanged"/>
+          <notebook @tableIdChanged="handleTableIdChanged" />
         </v-window-item>
 
         <v-window-item value="keterangan">
@@ -40,7 +40,11 @@ export default {
   methods: {
     handleTableIdChanged(newTableId) {
       this.globalTableId = newTableId;
-      //this.$refs.metaPageRef.fetchData();
+      this.$nextTick(() => {
+        if (this.$refs.metaPageRef) {
+          this.$refs.metaPageRef.fetchData();
+        }
+      });
     },
   },
 };
@@ -48,10 +52,11 @@ export default {
 
 
 <style scoped>
-.vcard{
+.vcard {
   /* max-width: 300px; */
   margin-left: 45px;
 }
+
 ul {
   list-style-type: none;
   margin: 0;
@@ -60,10 +65,12 @@ ul {
   background-color: #428DD1;
 
 }
-li{
+
+li {
   float: left;
 }
-li button{
+
+li button {
   font-weight: 900;
   font-size: 16px;
   display: block;
@@ -72,12 +79,13 @@ li button{
   padding: 10px 20px;
   text-decoration: none;
 }
-li a:hover:not(.active){
+
+li a:hover:not(.active) {
   background-color: cornflowerblue;
 }
-.active{
+
+.active {
   background-color: white;
   color: #428DD1;
 }
-
 </style>
